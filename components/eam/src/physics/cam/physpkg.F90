@@ -1111,11 +1111,17 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
     ! Physics for adiabatic or idealized physics case.
     ! 
     !-----------------------------------------------------------------------
-    use physics_buffer, only : physics_buffer_desc, pbuf_set_field, pbuf_get_chunk, pbuf_old_tim_idx
+    use physics_buffer,   only: physics_buffer_desc, pbuf_set_field, pbuf_get_chunk, pbuf_old_tim_idx
     use time_manager,     only: get_nstep
     use cam_diagnostics,  only: diag_phys_writeout
     use check_energy,     only: check_energy_fix, check_energy_chng
     use dycore,           only: dycore_is
+  
+    ! --JH--: adding to allow aoa tendencies
+    use check_energy,    only: check_tracers_chng, check_tracers_data
+    use aoa_tracers,     only: aoa_tracers_timestep_tend
+    use ppgrid,          only: pcols
+    use constituents,    only: pcnst
 
     !
     ! Input arguments
@@ -1145,6 +1151,11 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
     integer(i8)         :: sysclock_max    ! system clock max value
     real(r8)            :: chunk_cost      ! measured cost per chunk
 
+    ! --JH--: adding to allow aoa tendencies
+    type(check_tracers_data):: tracerint   ! tracer mass integrals and cummulative boundary fluxes
+    real(r8) :: dummy_cflx(pcols, pcnst)    ! array of zeros
+    real(r8) :: dummy_landfrac(pcols)       ! array of zeros
+
     character(len=128)  :: ideal_phys_option
 
     ! physics buffer field for total energy
@@ -1154,6 +1165,10 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
 
     nstep = get_nstep()
     zero  = 0._r8
+    
+    ! --JH--: adding to allow aoa tendencies
+    dummy_cflx = 0._r8
+    dummy_landfrac = 0._r8
 
     ! Associate pointers with physics buffer fields
     if (first_exec_of_phys_run1_adiabatic_or_ideal) then
@@ -1175,7 +1190,17 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
 
        ! Dump dynamics variables to history buffers
        call diag_phys_writeout(phys_state(c))
-
+       
+       ! --JH--: Allow advancing of aoa tendencies if enabled
+       ! the timestep_tend function automatically checks that aoa tracers are enabled for the run
+       ! TEMP SOLUTION: args cam_in%cflx and cam_in%landfrac removed for now from aoa_tracers_timestep
+       !                for running with modified aoa_tracers
+       call aoa_tracers_timestep_tend(phys_state(c), ptend(c), dummy_cflx, dummy_landfrac, ztodt) 
+       call physics_update(phys_state(c), ptend(c), ztodt, phys_tend(c))
+       call check_tracers_chng(phys_state(c), tracerint, "aoa_tracers_timestep_tend", nstep, ztodt, &
+                               dummy_cflx)
+        
+       ! Do energy check for LR, SE
        if (dycore_is('LR') .or. dycore_is('SE') ) then
           call check_energy_fix(phys_state(c), ptend(c), nstep, flx_heat)
           call physics_update(phys_state(c), ptend(c), ztodt, phys_tend(c))
@@ -1184,6 +1209,7 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
           call physics_ptend_dealloc(ptend(c))
        end if
 
+       ! Do Held-Suarez temperature forcing if FIDEAL
        if ( ideal_phys )then
           call t_startf('tphysidl')
           call tphysidl(ztodt, phys_state(c), phys_tend(c), trim(ideal_phys_option))
