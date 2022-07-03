@@ -104,6 +104,9 @@ CONTAINS
 !================================================================================
 
   subroutine atm_init_mct( EClock, cdata_a, x2a_a, a2x_a, NLFilename )
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_init
+#endif
 
     !-----------------------------------------------------------------------
     !
@@ -174,6 +177,10 @@ CONTAINS
          gsMap=gsMap_atm, dom=dom_a, infodata=infodata)
 
     if (first_time) then
+
+#if defined(CLDERA_PROFILING)
+       call cldera_init(mpicom_atm)
+#endif
        
        call cam_instance_init(ATMID)
 
@@ -469,6 +476,9 @@ CONTAINS
     use pmgrid,          only: plev, plevp
     use constituents,    only: pcnst
     use shr_sys_mod,     only: shr_sys_flush
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_compute_stats
+#endif
 
     ! 
     ! Arguments
@@ -657,11 +667,18 @@ CONTAINS
     endif
 #endif
 
+#if defined(CLDERA_PROFILING)
+    call cldera_compute_stats(ymd,tod)
+#endif
+
   end subroutine atm_run_mct
 
   !================================================================================
 
   subroutine atm_final_mct( EClock, cdata_a, x2a_a, a2x_a)
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_clean_up
+#endif
 
     type(ESMF_Clock)            ,intent(inout) :: EClock
     type(seq_cdata)             ,intent(inout) :: cdata_a
@@ -671,6 +688,10 @@ CONTAINS
     call t_startf('cam_final')
     call cam_final( cam_out, cam_in )
     call t_stopf('cam_final')
+
+#if defined(CLDERA_PROFILING)
+   call cldera_clean_up ()
+#endif
 
   end subroutine atm_final_mct
 
