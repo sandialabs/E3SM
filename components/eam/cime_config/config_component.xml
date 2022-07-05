@@ -59,7 +59,7 @@
       <!-- idealized configurations -->
       <value compset="_EAM%AQP_"       >&eam_phys_defaults; &eam_chem_defaults; -aquaplanet</value>
       <value compset="_EAM%RCE_"       >&eam_phys_defaults; -chem none -aquaplanet -rce -rad rrtmgp</value>
-      <value compset="_EAM%IDEAL"      >-phys ideal</value>
+      <value compset="_EAM%IDEAL"      >-phys ideal -nlev 72</value>
       <value compset="_EAM%ADIAB"      >-phys adiabatic</value>
 
       <!-- Multiscale modeling framework (MMF) -->
