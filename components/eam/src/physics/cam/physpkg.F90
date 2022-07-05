@@ -148,6 +148,7 @@ subroutine phys_register
     use prescribed_ghg,     only: prescribed_ghg_register
     use sslt_rebin,         only: sslt_rebin_register
     use aoa_tracers,        only: aoa_tracers_register
+    use cldera_sai_tracers, only: cldera_sai_tracers_register
     use aircraft_emit,      only: aircraft_emit_register
     use cam_diagnostics,    only: diag_register
     use cloud_diagnostics,  only: cloud_diagnostics_register
@@ -318,6 +319,9 @@ subroutine phys_register
 
     ! Register age of air tracers
     call aoa_tracers_register()
+    
+    ! Register CLDERA stratospheric aerosol injection tracers
+    call cldera_sai_tracers_register()
 
     ! Register test tracers
     ! ***** N.B. ***** This is the last call to register constituents because
@@ -708,6 +712,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     use conv_water,         only: conv_water_init
     use tracers,            only: tracers_init
     use aoa_tracers,        only: aoa_tracers_init
+    use cldera_sai_tracers, only: cldera_sai_tracers_init
     use rayleigh_friction,  only: rayleigh_friction_init
     use pbl_utils,          only: pbl_utils_init
     use vertical_diffusion, only: vertical_diffusion_init
@@ -730,6 +735,7 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     use rad_solar_var,      only: rad_solar_var_init
     use nudging,            only: Nudge_Model,nudging_init
     use output_aerocom_aie, only: output_aerocom_aie_init, do_aerocom_ind3
+    use cam_history,        only: addfld, add_default
 
 
     ! Input/output arguments
@@ -779,11 +785,18 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
 
     ! age of air tracers
     call aoa_tracers_init()
+    
+    ! CLDERA stratospheric aerosol injection tracers
+    call cldera_sai_tracers_init()
 
     teout_idx = pbuf_get_index( 'TEOUT')
 
     ! For adiabatic or ideal physics don't need to initialize any of the
-    ! parameterizations below:
+    ! parameterizations below. For ideal phys, init heating history field
+    if (ideal_phys) then
+        call addfld('HS_HEAT',  (/ 'lev' /), 'A', 'J/kg/s', 'heating rate by FIDEAL' )
+        call add_default('HS_HEAT', 1, ' ')
+    endif
     if (adiabatic .or. ideal_phys) return
 
     if (nsrest .eq. 0) then
@@ -1018,7 +1031,7 @@ subroutine phys_run1(phys_state, ztodt, phys_tend, pbuf2d,  cam_in, cam_out)
     
     if ( adiabatic .or. ideal_phys )then
        call t_stopf ('physpkg_st1')
-	
+
        call t_startf ('bc_physics')
        call phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
        call t_stopf ('bc_physics')
@@ -1111,11 +1124,18 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
     ! Physics for adiabatic or idealized physics case.
     ! 
     !-----------------------------------------------------------------------
-    use physics_buffer, only : physics_buffer_desc, pbuf_set_field, pbuf_get_chunk, pbuf_old_tim_idx
+    use physics_buffer,   only: physics_buffer_desc, pbuf_set_field, pbuf_get_chunk, pbuf_old_tim_idx
     use time_manager,     only: get_nstep
     use cam_diagnostics,  only: diag_phys_writeout
     use check_energy,     only: check_energy_fix, check_energy_chng
     use dycore,           only: dycore_is
+  
+    ! --JH--: adding to allow calling of custom tracer tendencies
+    use check_energy,    only: check_tracers_chng, check_tracers_data
+    use aoa_tracers,     only: aoa_tracers_timestep_tend
+    use ppgrid,          only: pcols
+    use constituents,    only: pcnst
+    use cldera_sai_tracers,     only: cldera_sai_tracers_timestep_tend
 
     !
     ! Input arguments
@@ -1145,6 +1165,13 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
     integer(i8)         :: sysclock_max    ! system clock max value
     real(r8)            :: chunk_cost      ! measured cost per chunk
 
+    ! --JH--: adding to allow aoa tendencies
+    type(check_tracers_data):: tracerint   ! tracer mass integrals and cummulative boundary fluxes
+    real(r8) :: dummy_cflx(pcols, pcnst)    ! array of zeros
+    real(r8) :: dummy_landfrac(pcols)       ! array of zeros
+
+    character(len=128)  :: ideal_phys_option
+
     ! physics buffer field for total energy
     real(r8), pointer, dimension(:) :: teout
     logical, SAVE :: first_exec_of_phys_run1_adiabatic_or_ideal  = .TRUE.
@@ -1152,6 +1179,10 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
 
     nstep = get_nstep()
     zero  = 0._r8
+    
+    ! --JH--: adding to allow aoa tendencies
+    dummy_cflx = 0._r8
+    dummy_landfrac = 0._r8
 
     ! Associate pointers with physics buffer fields
     if (first_exec_of_phys_run1_adiabatic_or_ideal) then
@@ -1159,6 +1190,8 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
     endif
 
     call system_clock(count=beg_proc_cnt)
+
+    call phys_getopts(ideal_phys_option_out=ideal_phys_option)
 
 !$OMP PARALLEL DO SCHEDULE(STATIC,1) &
 !$OMP PRIVATE (c, beg_chnk_cnt, flx_heat, end_chnk_cnt, sysclock_rate, sysclock_max, chunk_cost)
@@ -1171,7 +1204,15 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
 
        ! Dump dynamics variables to history buffers
        call diag_phys_writeout(phys_state(c))
-
+        
+       ! --JH--: Allow advancing of CLDERA SAI tendencies if enabled
+       ! the timestep_tend function automatically checks that aoa tracers are enabled for the run
+       call cldera_sai_tracers_timestep_tend(phys_state(c), ptend(c), ztodt, phys_state(c)%ncol) 
+       call physics_update(phys_state(c), ptend(c), ztodt, phys_tend(c))
+       call check_tracers_chng(phys_state(c),tracerint,"cldera_sai_tracers_timestep_tend",nstep,ztodt, &
+                               dummy_cflx)
+        
+       ! Do energy check for LR, SE
        if (dycore_is('LR') .or. dycore_is('SE') ) then
           call check_energy_fix(phys_state(c), ptend(c), nstep, flx_heat)
           call physics_update(phys_state(c), ptend(c), ztodt, phys_tend(c))
@@ -1180,9 +1221,10 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
           call physics_ptend_dealloc(ptend(c))
        end if
 
+       ! Do Held-Suarez temperature forcing if FIDEAL
        if ( ideal_phys )then
           call t_startf('tphysidl')
-          call tphysidl(ztodt, phys_state(c), phys_tend(c))
+          call tphysidl(ztodt, phys_state(c), phys_tend(c), trim(ideal_phys_option))
           call t_stopf('tphysidl')
        end if
 
@@ -1464,6 +1506,7 @@ subroutine tphysac (ztodt,   cam_in,  &
     use ionosphere,         only: ionos_intr ! WACCM-X ionosphere
     use tracers,            only: tracers_timestep_tend
     use aoa_tracers,        only: aoa_tracers_timestep_tend
+    use cldera_sai_tracers, only: cldera_sai_tracers_timestep_tend
     use physconst,          only: rhoh2o, latvap,latice, rga
     use aero_model,         only: aero_model_drydep
     use check_energy,       only: check_energy_chng, check_water, & 
@@ -1664,6 +1707,11 @@ if (l_tracer_aero) then
     call aoa_tracers_timestep_tend(state, ptend, cam_in%cflx, cam_in%landfrac, ztodt)      
     call physics_update(state, ptend, ztodt, tend)
     call check_tracers_chng(state, tracerint, "aoa_tracers_timestep_tend", nstep, ztodt,   &
+         cam_in%cflx)
+    
+    call cldera_sai_tracers_timestep_tend(state, ptend, ztodt, ncol)      
+    call physics_update(state, ptend, ztodt, tend)
+    call check_tracers_chng(state, tracerint, "cldera_sai_tracers_timestep_tend", nstep, ztodt,   &
          cam_in%cflx)
     
     ! add tendency from aircraft emissions
@@ -2793,6 +2841,7 @@ subroutine phys_timestep_init(phys_state, cam_out, pbuf2d)
   use radiation,           only: radiation_do
   use tracers,             only: tracers_timestep_init
   use aoa_tracers,         only: aoa_tracers_timestep_init
+  use cldera_sai_tracers,  only: cldera_sai_tracers_timestep_init
   use vertical_diffusion,  only: vertical_diffusion_ts_init
   use radheat,             only: radheat_timestep_init
   use solar_data,          only: solar_data_advance
@@ -2882,6 +2931,9 @@ subroutine phys_timestep_init(phys_state, cam_out, pbuf2d)
 
   ! age of air tracers
   call aoa_tracers_timestep_init(phys_state)
+  
+  ! CLDERA stratopsheric aerosol injection tracers
+  call cldera_sai_tracers_timestep_init(phys_state)
 
   ! Update Nudging values, if needed
   !----------------------------------
