@@ -1,6 +1,7 @@
    SPECIES
-
+*AH -- added E90
       Solution
+ E90 -> CO
  O3
  H2O2, H2SO4, SO2, DMS -> CH3SCH3, SOAG -> C
  so4_a1 -> NH4HSO4
@@ -33,10 +34,11 @@
       End Col-int
 
    End SPECIES
-
+*AH -- Added E90
    Solution Classes
       Explicit
         O3
+        E90
       End Explicit
       Implicit
         H2O2, H2SO4, SO2, DMS, SOAG
@@ -55,7 +57,7 @@
       Photolysis
  [jh2o2]    H2O2 + hv ->
       End Photolysis
-
+*AH -- added E90
       Reactions
  [usr_HO2_HO2] HO2 + HO2 -> H2O2
                H2O2 + OH -> H2O + HO2                                           ; 2.9e-12, -160
@@ -63,6 +65,7 @@
                DMS + OH -> SO2                                                  ; 9.6e-12, -234.
  [usr_DMS_OH]  DMS + OH -> .5 * SO2 + .5 * HO2
                DMS + NO3 -> SO2 + HNO3                                          ; 1.9e-13,  520.
+ [E90_tau]     E90 -> sink                                                      ; 1.29e-07
       End Reactions
 
       Ext Forcing
