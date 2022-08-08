@@ -27,6 +27,9 @@ module mo_gas_phase_chemdr
   integer :: ndx_cldfr, ndx_cmfdqr, ndx_nevapr, ndx_cldtop, ndx_prain, ndx_sadsulf
   integer :: ndx_h2so4
   integer :: inv_ndx_cnst_o3, inv_ndx_m
+!AH
+  integer :: st80_25_ndx
+  integer :: st80_25_tau_ndx
 
   character(len=fieldname_len),dimension(rxntot-phtcnt) :: rxn_names
   character(len=fieldname_len),dimension(phtcnt)        :: pht_names
@@ -63,6 +66,9 @@ contains
          convproc_do_aer_out = convproc_do_aer ) 
    
     ndx_h2so4 = get_spc_ndx('H2SO4')
+!AH
+    st80_25_ndx     = get_spc_ndx   ('ST80_25')
+    st80_25_tau_ndx = get_rxt_ndx   ('ST80_25_tau')
 
     het1_ndx= get_rxt_ndx('het1')
     o3_ndx  = get_spc_ndx('O3')
@@ -449,7 +455,14 @@ contains
     !-----------------------------------------------------------------------      
     !        ... Xform from mmr to vmr
     !-----------------------------------------------------------------------      
-    call mmr2vmr( mmr, vmr, mbar, ncol )
+!    call mmr2vmr( mmr, vmr, mbar, ncol )
+!AH -- added ST80
+    call mmr2vmr( mmr(:ncol,:,:), vmr(:ncol,:,:), mbar(:ncol,:), ncol )
+    if ( st80_25_ndx > 0 ) then
+       where ( pmid(:ncol,:) < 80.e+2_r8 )
+          vmr(:ncol,:,st80_25_ndx) = 200.e-9_r8
+       end where
+    end if
 
     if (h2o_ndx>0) then
        !-----------------------------------------------------------------------      
