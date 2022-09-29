@@ -465,6 +465,8 @@ contains
        where ( pmid(:ncol,:) < 80.e+2_r8 )
           vmr(:ncol,:,st80_25_ndx) = 200.e-9_r8
        end where
+       ! JH
+       write(iulog, *) 'AH PMID AT k20: ', pmid(0, 20)
     end if
 
     if (h2o_ndx>0) then

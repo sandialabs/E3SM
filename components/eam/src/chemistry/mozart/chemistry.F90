@@ -1359,6 +1359,7 @@ end function chem_is_active
     use mo_drydep,           only : drydep_update
     use mo_neu_wetdep,       only : neu_wetdep_tend, do_neu_wetdep
     use aerodep_flx,         only : aerodep_flx_prescribed
+    use mo_chem_utls,        only : get_spc_ndx
     
     implicit none
 
@@ -1366,7 +1367,8 @@ end function chem_is_active
 ! Dummy arguments
 !-----------------------------------------------------------------------
     real(r8),            intent(in)    :: dt              ! time step
-    type(physics_state), intent(in)    :: state           ! Physics state variables
+    !type(physics_state), intent(in)    :: state           ! Physics state variables
+    type(physics_state), intent(inout) :: state           ! Physics state variables  JH
     type(physics_ptend), intent(out)   :: ptend           ! indivdual parameterization tendencies
     type(cam_in_t),      intent(inout) :: cam_in
     type(cam_out_t),     intent(inout) :: cam_out
@@ -1461,6 +1463,14 @@ end function chem_is_active
                           fsds, cam_in%ts, cam_in%asdir, cam_in%ocnfrac, cam_in%icefrac, &
                           cam_out%precc, cam_out%precl, cam_in%snowhland, ghg_chem, state%latmapback, &
                           chem_name, drydepflx, cam_in%cflx, ptend%q, pbuf)
+    ! JH: enforce ST80 thershold *after* tendency
+    do k = 1,pver
+        do i = 1, ncol
+            if (state%pmid(i, k) >= 80.e+2_r8) then
+               state%q(:, k, get_spc_ndx('ST80_25')) = 200.e-9_r8
+            endif
+        enddo
+    enddo
 
     call t_stopf( 'chemdr' )
 

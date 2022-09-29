@@ -215,6 +215,10 @@ contains
     call add_default('SFE90j', 1, ' ')
     call addfld('SFE90j2',  horiz_only, 'A', 'kg/m2/s', 'E90j surface flux' )
     call add_default('SFE90j2', 1, ' ')
+    call addfld('CT_E90j',  (/ 'lev' /), 'A', 'kg/kg/s', 'E90j tendency' )
+    call add_default('CT_E90j', 1, ' ')
+    call addfld('CT_ST80j',  (/ 'lev' /), 'A', 'kg/kg/s', 'ST80_25j tendency' )
+    call add_default('CT_ST80j', 1, ' ')
 
   end subroutine cldera_passive_tracers_init
 
@@ -401,6 +405,7 @@ contains
           end if
        end do
     end do
+    write(iulog, *) 'JH PMID AT k20: ', state%pmid(0, 20)
 
     ! -------------------- TRACER FLUXES --------------------
     do i = 1, ncol
@@ -423,6 +428,8 @@ contains
            
     call outfld('SFE90j',  cflx(:,ixe90), ncol, lchnk)
     call outfld('SFE90j2', sflx_e90_out(:,ixe90), ncol, lchnk)
+    call outfld('CT_E90j',  ptend%q(:,:,ixe90), ncol, lchnk)
+    call outfld('CT_ST80j',  ptend%q(:,:,ixst80), ncol, lchnk)
     
 
   end subroutine cldera_passive_tracers_timestep_tend
