@@ -4,6 +4,11 @@
 
 
 
+
+
+
+
+
       module mo_prod_loss
 
       use shr_kind_mod, only : r8 => shr_kind_r8
@@ -16,24 +21,24 @@
 
       subroutine exp_prod_loss( prod, loss, y, rxt, het_rates )
 
-      use ppgrid, only : pver
+      use ppgrid,       only : pver
 
       implicit none
 
 !--------------------------------------------------------------------
-! ... dummy args
+!     ... dummy args                                                                      
 !--------------------------------------------------------------------
       real(r8), dimension(:,:,:), intent(out) :: &
             prod, &
             loss
-      real(r8), intent(in) :: y(:,:,:)
-      real(r8), intent(in) :: rxt(:,:,:)
-      real(r8), intent(in) :: het_rates(:,:,:)
+      real(r8), intent(in)    ::  y(:,:,:)
+      real(r8), intent(in)    ::  rxt(:,:,:)
+      real(r8), intent(in)    ::  het_rates(:,:,:)
 
 
 
 !--------------------------------------------------------------------
-! ... loss and production for Explicit method
+!       ... loss and production for Explicit method
 !--------------------------------------------------------------------
 
 
@@ -44,24 +49,24 @@
 
       subroutine imp_prod_loss( prod, loss, y, rxt, het_rates )
 
-      use ppgrid, only : pver
+      use ppgrid,       only : pver
 
       implicit none
 
 !--------------------------------------------------------------------
-! ... dummy args
+!     ... dummy args                                                                      
 !--------------------------------------------------------------------
       real(r8), dimension(:), intent(out) :: &
             prod, &
             loss
-      real(r8), intent(in) :: y(:)
-      real(r8), intent(in) :: rxt(:)
-      real(r8), intent(in) :: het_rates(:)
+      real(r8), intent(in)    ::  y(:)
+      real(r8), intent(in)    ::  rxt(:)
+      real(r8), intent(in)    ::  het_rates(:)
 
 
 
 !--------------------------------------------------------------------
-! ... loss and production for Implicit method
+!       ... loss and production for Implicit method
 !--------------------------------------------------------------------
 
 
@@ -117,6 +122,14 @@
          prod(25) = 0._r8
          loss(26) = ( + het_rates(27))* y(27)
          prod(26) = 0._r8
+         loss(27) = ( + het_rates(28))* y(28)
+         prod(27) = 0._r8
+         loss(28) = ( + het_rates(29))* y(29)
+         prod(28) = 0._r8
+         loss(29) = ( + het_rates(30))* y(30)
+         prod(29) = 0._r8
+         loss(30) = ( + het_rates(31))* y(31)
+         prod(30) = 0._r8
 
       end subroutine imp_prod_loss
 
