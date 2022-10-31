@@ -1,20 +1,7 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
 module mo_imp_sol
   use shr_kind_mod, only : r8 => shr_kind_r8
-  use chem_mods,    only : clscnt4, gas_pcnst, clsmap
-  use cam_logfile,  only : iulog
+  use chem_mods, only : clscnt4, gas_pcnst, clsmap
+  use cam_logfile, only : iulog
   implicit none
   private
   public :: imp_slv_inti, imp_sol

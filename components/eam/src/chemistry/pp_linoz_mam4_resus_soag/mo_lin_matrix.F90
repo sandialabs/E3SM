@@ -5,11 +5,6 @@
 
 
 
-
-
-
-
-
       module mo_lin_matrix
 
       private
@@ -19,7 +14,7 @@
 
       subroutine linmat01( mat, y, rxt, het_rates )
 !----------------------------------------------
-!       ... linear matrix entries for implicit species
+! ... linear matrix entries for implicit species
 !----------------------------------------------
 
       use chem_mods, only : gas_pcnst, rxntot, nzcnt
@@ -28,12 +23,12 @@
       implicit none
 
 !----------------------------------------------
-!       ... dummy arguments
+! ... dummy arguments
 !----------------------------------------------
-      real(r8), intent(in)    ::  y(gas_pcnst)
-      real(r8), intent(in)    ::  rxt(rxntot)
-      real(r8), intent(in)    ::  het_rates(max(1,gas_pcnst))
-      real(r8), intent(inout) ::  mat(nzcnt)
+      real(r8), intent(in) :: y(gas_pcnst)
+      real(r8), intent(in) :: rxt(rxntot)
+      real(r8), intent(in) :: het_rates(max(1,gas_pcnst))
+      real(r8), intent(inout) :: mat(nzcnt)
 
          mat(1) = -( rxt(1) + rxt(3) + het_rates(2) )
 
@@ -89,20 +84,12 @@
 
          mat(28) = -( het_rates(27) )
 
-         mat(29) = -( het_rates(28) )
-
-         mat(30) = -( het_rates(29) )
-
-         mat(31) = -( het_rates(30) )
-
-         mat(32) = -( het_rates(31) )
-
 
       end subroutine linmat01
 
       subroutine linmat( mat, y, rxt, het_rates )
 !----------------------------------------------
-!       ... linear matrix entries for implicit species
+! ... linear matrix entries for implicit species
 !----------------------------------------------
 
       use chem_mods, only : gas_pcnst, rxntot, nzcnt
@@ -111,12 +98,12 @@
       implicit none
 
 !----------------------------------------------
-!       ... dummy arguments
+! ... dummy arguments
 !----------------------------------------------
-      real(r8), intent(in)    ::  y(gas_pcnst)
-      real(r8), intent(in)    ::  rxt(rxntot)
-      real(r8), intent(in)    ::  het_rates(max(1,gas_pcnst))
-      real(r8), intent(inout) ::  mat(nzcnt)
+      real(r8), intent(in) :: y(gas_pcnst)
+      real(r8), intent(in) :: rxt(rxntot)
+      real(r8), intent(in) :: het_rates(max(1,gas_pcnst))
+      real(r8), intent(inout) :: mat(nzcnt)
 
       call linmat01( mat, y, rxt, het_rates )
 
