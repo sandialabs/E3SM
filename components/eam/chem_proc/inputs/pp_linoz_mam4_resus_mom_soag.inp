@@ -8,12 +8,14 @@ sim_dat_path       = ../output/
 sim_dat_filename   = linoz_mam4_resus_mom_soag.dat
 
 Comments
-     E3SMv1 DECK chemistry.
+     E3SMv2 DECK chemistry plus tracers E90 and ST80_25 for CLDERA
 End Comments
 
    SPECIES
 
       Solution
+ E90 -> CO
+ ST80_25 -> CO
  O3
  H2O2, H2SO4, SO2, DMS -> CH3SCH3, SOAG -> C
  so4_a1 -> NH4HSO4
@@ -49,6 +51,8 @@ End Comments
 
    Solution Classes
       Explicit
+        ST80_25
+        E90
         O3
       End Explicit
       Implicit
@@ -76,6 +80,9 @@ End Comments
                DMS + OH -> SO2                                                  ; 9.6e-12, -234.
  [usr_DMS_OH]  DMS + OH -> .5 * SO2 + .5 * HO2
                DMS + NO3 -> SO2 + HNO3                                          ; 1.9e-13,  520.
+ [E90_tau]     E90 -> sink                                                      ; 1.29e-07
+ [ST80_25_tau]          ST80_25  ->                                              ; 4.63e-07
+     
       End Reactions
 
       Ext Forcing

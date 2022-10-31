@@ -71,11 +71,11 @@
                             13,  14,  15,  16,  17,  18,  19,  20,  21,  22, &
                             23,  24,  25,  26,  27,  28,  29,  30,  31,  32 /)
 
-      extfrc_lst(:  9) = (/ 'SO2             ','so4_a1          ','so4_a2          ','pom_a4          ','bc_a4           ', &
-                            'num_a1          ','num_a2          ','num_a4          ','SOAG            ' /)
+      extfrc_lst(:  8) = (/ 'SO2             ','so4_a1          ','so4_a2          ','pom_a4          ','bc_a4           ', &
+                            'num_a1          ','num_a2          ','num_a4          ' /)
 
-      frc_from_dataset(:  9) = (/ .true., .true., .true., .true., .true., &
-                                  .true., .true., .true., .true. /)
+      frc_from_dataset(:  8) = (/ .true., .true., .true., .true., .true., &
+                                  .true., .true., .true. /)
 
       inv_lst(:  8) = (/ 'M               ', 'N2              ', 'O2              ', 'H2O             ', 'OH              ', &
                          'NO3             ', 'HO2             ', 'cnst_O3         ' /)

@@ -5,6 +5,11 @@
 
 
 
+
+
+
+
+
       module mo_adjrxt
 
       private
@@ -21,26 +26,26 @@
       implicit none
 
 !--------------------------------------------------------------------
-! ... dummy arguments
+!       ... dummy arguments
 !--------------------------------------------------------------------
       integer, intent(in) :: ncol
-      real(r8), intent(in) :: inv(ncol,pver,nfs)
-      real(r8), intent(in) :: m(ncol,pver)
+      real(r8), intent(in)    :: inv(ncol,pver,nfs)
+      real(r8), intent(in)    :: m(ncol,pver)
       real(r8), intent(inout) :: rate(ncol,pver,rxntot)
 
 !--------------------------------------------------------------------
-! ... local variables
+!       ... local variables
 !--------------------------------------------------------------------
       real(r8) :: im(ncol,pver)
 
 
-         rate(:,:, 3) = rate(:,:, 3) * inv(:,:, 5)
-         rate(:,:, 4) = rate(:,:, 4) * inv(:,:, 5)
-         rate(:,:, 5) = rate(:,:, 5) * inv(:,:, 5)
-         rate(:,:, 6) = rate(:,:, 6) * inv(:,:, 5)
-         rate(:,:, 7) = rate(:,:, 7) * inv(:,:, 6)
+         rate(:,:,  3) = rate(:,:,  3) * inv(:,:, 5)
+         rate(:,:,  4) = rate(:,:,  4) * inv(:,:, 5)
+         rate(:,:,  5) = rate(:,:,  5) * inv(:,:, 5)
+         rate(:,:,  6) = rate(:,:,  6) * inv(:,:, 5)
+         rate(:,:,  7) = rate(:,:,  7) * inv(:,:, 6)
          im(:,:) = 1._r8 / m(:,:)
-         rate(:,:, 2) = rate(:,:, 2) * inv(:,:, 7) * inv(:,:, 7) * im(:,:)
+         rate(:,:,  2) = rate(:,:,  2) * inv(:,:, 7) * inv(:,:, 7) * im(:,:)
 
       end subroutine adjrxt
 
