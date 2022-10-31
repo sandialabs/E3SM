@@ -622,6 +622,9 @@
 <mam7_num_a1_ext_file  >atm/cam/chem/trop_mozart_aero/emis/ar5_mam7_num_a1_elev_2000_c120716.nc</mam7_num_a1_ext_file>
 <mam7_num_a3_ext_file  >atm/cam/chem/trop_mozart_aero/emis/ar5_mam7_num_a3_elev_2000_c120716.nc</mam7_num_a3_ext_file>
 
+<!-- WACCM E90 emission file -->
+<E90_emis_file     ver="mam">atm/cldera/emissions/tracer/emissions_E90global_surface_175001-210101_0.9x1.25_c20190224.nc</E90_emis_file>
+
 <!-- prescribed oxidants for prognostic aerosol chemistry -->
 <tracer_cnst_file     ver="fixed_ox">oxid_1.9x2.5_L26_1850-2005_c091123.nc</tracer_cnst_file>
 <tracer_cnst_datapath ver="fixed_ox">atm/cam/chem/trop_mozart_aero/oxid</tracer_cnst_datapath>
