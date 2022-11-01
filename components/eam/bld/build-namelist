@@ -2878,7 +2878,7 @@ if ($chem eq 'linoz_mam4_resus_mom' || $chem eq 'linoz_mam4_resus_mom_soag') {
 
     my %species;
 
-    # Surface emission datasets (AH -- added E90 here):
+    # Surface emission datasets
     %species = ();
     if ($chem eq 'linoz_mam4_resus_mom_soag') {
 	%species = ('DMS       -> ' => 'dms_emis_file',
