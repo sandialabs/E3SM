@@ -161,6 +161,7 @@ OPTIONS
                         The user does not need to set this if one of the waccm chemistry options
                         is chosen.
      -waccmx            Build EAM/WACCM with WACCM upper Thermosphere/Ionosphere extended package
+     -cldera_chem_tracers Build with WACCM-style E90/ST80 tracers. Will also need to pass -usr_mech_infile
 
 
   Options relevent to SCAM mode:
@@ -372,6 +373,7 @@ GetOptions(
     "waccm_phys"                => \$opts{'waccm_phys'},
     "offline_dyn"               => \$opts{'offline_dyn'},
     "waccmx"                    => \$opts{'waccmx'},
+    "cldera_chem_tracers"       => \$opts{'cldera_chem_tracers'},
     "cosp_libdir=s"             => \$opts{'cosp_libdir'},
     "esmf_libdir=s"             => \$opts{'esmf_libdir'},
     "mct_libdir=s"              => \$opts{'mct_libdir'},
