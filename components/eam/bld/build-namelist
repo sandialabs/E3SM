@@ -2878,11 +2878,10 @@ if ($chem eq 'linoz_mam4_resus_mom' || $chem eq 'linoz_mam4_resus_mom_soag') {
 
     my %species;
 
-    # Surface emission datasets (AH -- added E90 here):
+    # Surface emission datasets:
     %species = ();
     if ($chem eq 'linoz_mam4_resus_mom_soag') {
 	%species = ('DMS       -> ' => 'dms_emis_file',
-                    'E90       -> ' => 'E90_emis_file',
 		    'SO2       -> ' => 'so2_emis_file',
 		    'bc_a4     -> ' => 'bc_a4_emis_file',
 		    'pom_a4    -> ' => 'pom_a4_emis_file',
@@ -2894,7 +2893,6 @@ if ($chem eq 'linoz_mam4_resus_mom' || $chem eq 'linoz_mam4_resus_mom_soag') {
 	    );
     } else {
 	%species = ('DMS       -> ' => 'dms_emis_file',
-                    'E90       -> ' => 'E90_emis_file',
 		    'SO2       -> ' => 'so2_emis_file',
 		    'SOAG      -> ' => 'soag_emis_file',
 		    'bc_a4     -> ' => 'bc_a4_emis_file',
@@ -2906,6 +2904,11 @@ if ($chem eq 'linoz_mam4_resus_mom' || $chem eq 'linoz_mam4_resus_mom_soag') {
 		    'num_a4    -> ' => 'mam7_num_a3_emis_file',
 	    );
     }
+    # Add E90 to hashes
+    if ($cfg->get('cldera_chem_tracers')) {
+        %species = (%species, 'E90       -> ' => 'E90_emis_file');
+    }
+
     my %verhash = ('ver'=>'mam');
     my $first = 1;
     my $pre = "";
