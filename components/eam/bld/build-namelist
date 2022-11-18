@@ -2904,6 +2904,11 @@ if ($chem eq 'linoz_mam4_resus_mom' || $chem eq 'linoz_mam4_resus_mom_soag') {
 		    'num_a4    -> ' => 'mam7_num_a3_emis_file',
 	    );
     }
+    # Add E90 to hashes
+    if ($cfg->get('cldera_chem_tracers')) {
+        %species = (%species, 'E90       -> ' => 'E90_emis_file');
+    }
+
     my %verhash = ('ver'=>'mam');
     my $first = 1;
     my $pre = "";
