@@ -1,0 +1,4 @@
+RUNDIR=$(./xmlquery --value RUNDIR)
+cp /ascldap/users/asteyer/cldera_work/cldera-tools-scripts/cldera_profiling_config.yaml ${RUNDIR}/cldera_profiling_config.yaml
+./xmlchange --append CAM_CONFIG_OPTS="-cldera_profiling"
+./xmlchange EPS_AGRID=1e-10

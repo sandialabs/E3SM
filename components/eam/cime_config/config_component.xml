@@ -44,6 +44,7 @@
       <value compset="_EAM"          >-phys default</value>
       <value compset="_EAM%MAM4"     >-chem trop_mam4</value>
       <value compset="_EAM%CMIP6"    >-clubb_sgs -microphys mg2 -chem linoz_mam4_resus_mom_soag -rain_evap_to_coarse_aero -nlev 72</value>
+      <value compset="_EAM%CMIP6-CLDERA"    >-clubb_sgs -microphys mg2 -chem linoz_mam4_resus_mom_soag -rain_evap_to_coarse_aero -nlev 72</value>
       <value compset="_EAM%AR5sf"    >-clubb_sgs -microphys mg2 -chem superfast_mam4_resus_mom_soag -rain_evap_to_coarse_aero -nlev 72</value>
       <value compset="_EAM%MOZM"     >-chem trop_mozart_mam3 -age_of_air_trcs</value>
       <value compset="_EAM%PM"       >-chem none</value>
@@ -121,6 +122,7 @@
       <value compset="1950(?:SOI)?_EAM.*CMIP6"  >1950_eam_CMIP6</value>
       <value compset="1850(?:SOI)?_EAM.*CMIP6.*_BGC%B"  >1850_cam5_CMIP6_bgc</value>
       <value compset="2010(?:SOI)?_EAM.*CMIP6"  >2010_eam_CMIP6</value>
+      <value compset="2010(?:SOI)?_EAM.*CMIP6-CLDERA"  >2010_eam_CMIP6</value>
       <value compset="1850(?:SOI)?_EAM.*AR5sf"   >1850_E3SMv1_superfast_ar5-emis</value>
       <value compset="1850S_EAM.*AR5sf"  >1850S_E3SMv1_superfast_ar5-emis</value>
       <value compset="20TR(?:SOI)?_EAM.*CMIP6"  >20TR_eam_CMIP6</value>
@@ -196,6 +198,7 @@
     <desc compset="_EAM.*AV1C-L"   >EAM with complete set of E3SM atmospheric mods for V1 (72 layers model) and ACES4BGC SOAG emissions- v04p2:</desc>
     <desc compset="_EAM.*AV1C-H01A">EAM with complete set of E3SM atmospheric mods for V1 (72 layers model) and ACES4BGC SOAG emissions- vh01a:</desc>
     <desc compset="_EAM.*CMIP6"    >EAM with complete set of E3SM atmospheric mods for V1 (72 layers model) and ACES4BGC SOAG emissions- CMIP6-DECK:</desc>
+    <desc compset="_EAM.*CMIP6-CLDERA"    >EAM with complete set of E3SM atmospheric mods for V1 (72 layers model) and ACES4BGC SOAG emissions- CMIP6-DECK:</desc>
     <desc compset="_EAM.*CMIP6-HR" >high-res (ne120 w/ 18to6 ocn) 72 layer E3SM v1 atmos model with CMIP6 forcings </desc>
     <desc compset="_EAM.*CMIP6-LR" >low-res (ne30 w/ oECv3 ocn) 72 layer E3SM v1 atmos model with CMIP6 forcings </desc>
     <desc compset="_EAM.*AR5sf"    >E3SM plus super-fast chemistry with AR5 emissions:</desc>
@@ -244,7 +247,7 @@
     <value compset="EAM%MMF.*-RCE">$SRCROOT/components/eam/cime_config/usermods_dirs/rcemip</value>
     <value compset="EAM%MMF.*-SCM">$SRCROOT/components/eam/cime_config/usermods_dirs/scm</value>
     <value compset="EAM%SCAM">$SRCROOT/components/eam/cime_config/usermods_dirs/scm</value>
-    <value compset="EAM%CMIP6-CLDERA">$SRCROOT/components/eam/cime_config/usermods_dirs/volcaero</value>
+<!--    <value compset="EAM%CMIP6-CLDERA">$SRCROOT/components/eam/cime_config/usermods_dirs/volcaero</value> -->
     </values>
     <group>run_component_cam</group>
     <file>env_case.xml</file>

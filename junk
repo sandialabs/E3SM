@@ -1,0 +1,93 @@
+cime_config/machines/cmake_macros/gnu_mappy.cmake:set(CLDERA_PATH "/sems-data-store/ACME/cldera/cldera-tools/install")
+cime_config/machines/cmake_macros/intel_sandiatoss3.cmake:set(CLDERA_PATH "~/cldera_work/cldera-tools-install")
+cime_config/machines/config_machines.xml:      <env name="CLDERA_PATH">~/cldera_work/cldera-tools-install</env>
+cime_config/tests.py:            "ERS_Ln9.ne4pg2_oQU480.F20TR-CLDERA.eam-prognostic_volcaero",
+components/cmake/build_model.cmake:      if (USE_CLDERA_PROFILING)
+components/cmake/build_model.cmake:          set (CLDERA_PATH_POSTFIX debug)
+components/cmake/build_model.cmake:          set (CLDERA_PATH_POSTFIX release)
+components/cmake/build_model.cmake:        message ("CLDERA root DIR: ${CLDERA_PATH}/${CLDERA_PATH_POSTFIX}")
+components/cmake/build_model.cmake:        find_package(Cldera REQUIRED PATHS ${CLDERA_PATH}/${CLDERA_PATH_POSTFIX})
+components/cmake/build_model.cmake:        target_compile_definitions(${TARGET_NAME} PRIVATE CLDERA_PROFILING)
+components/cmake/common_setup.cmake:# Detect if CLDERA profiling tool lib has to be used
+components/cmake/common_setup.cmake:string(FIND "${CAM_CONFIG_OPTS}" "-cldera_profiling" HAS_CLDERA_PROFILING)
+components/cmake/common_setup.cmake:if (NOT HAS_CLDERA_PROFILING EQUAL -1)
+components/cmake/common_setup.cmake:  set(USE_CLDERA_PROFILING TRUE)
+components/eam/bld/build-namelist:# Adding call for CLDERA prognostic stratospheric volcanic aerosol treatment
+components/eam/bld/build-namelist:my $cldera_strat_volc = $cfg->get('cldera_strat_volc'); #default should be no CLDERA treatment (0)
+components/eam/bld/build-namelist:# CLDERA AOA, E90, ST80_25 tracers
+components/eam/bld/build-namelist:# CLDERA SAI tracers
+components/eam/bld/config_files/definition.xml:Switch on (off) CLDERA aoa, e90, st80 tracers: 0=off, 1=on.
+components/eam/bld/configure:  Options for CLDERA-E3SM
+components/eam/bld/configure:     -cldera_profiling  Build EAM with support for CLDERA profiling, linking to cldera-profiling
+components/eam/bld/configure:     -cldera_passive_trcs Switch on CLDERA passive tracers. Default: off
+components/eam/bld/configure:if ($print>=2) { print "CLDERA SAI tracer package: $cldera_sai_trcs$eol"; }
+components/eam/bld/configure:if ($print>=2) { print "CLDERA passive tracer package: $cldera_passive_trcs$eol"; }
+components/eam/bld/configure:#CLDERA stratospheric volcanic aerosol treatment
+components/eam/bld/configure:    $chem_cppdefs = "$chem_cppdefs  -DCLDERA_STRAT_VOLC "
+components/eam/bld/configure:        if ($print>=2) { print "Advected constituents added by the CLDERA SAI tracer package: 5$eol"; }
+components/eam/bld/configure:        if ($print>=2) { print "Advected constituents added by the CLDERA passive tracers package: 4$eol"; }
+components/eam/bld/namelist_files/namelist_defaults_eam.xml:<!-- for CLDERA stratospheric aerosol treatment-->
+components/eam/bld/namelist_files/namelist_defaults_eam.xml:<!-- Defaults for CLDERA SAI                                            -->
+components/eam/bld/namelist_files/namelist_defaults_eam.xml:<!-- for CLDERA stratospheric aerosol treatment-->
+components/eam/bld/namelist_files/namelist_definition.xml:<!-- CLDERA passive tracers -->
+components/eam/bld/namelist_files/namelist_definition.xml:If true, CLDERA passive tracers are included.  This variable should not be set
+components/eam/bld/namelist_files/namelist_definition.xml:If true, CLDERA passive tracers are read from the initial conditions file.
+components/eam/bld/namelist_files/namelist_definition.xml:<!-- CLDERA SAI tracers -->
+components/eam/bld/namelist_files/namelist_definition.xml:If true CLDERA stratospheric aerosol injection tracers are included.  
+components/eam/bld/namelist_files/namelist_definition.xml:If true CLDERA stratospheric aerosol injection tracers are read from the initial 
+components/eam/bld/namelist_files/use_cases/1850_eam_CMIP6.xml:<!-- Removing prescribed volcanic forcing for CLDERA -->
+components/eam/bld/namelist_files/use_cases/1850_eam_CMIP6.xml:<!-- CLDERA merged volcanic emission files -->
+components/eam/bld/namelist_files/use_cases/20TR_eam_CMIP6.xml:<!-- Removing prescribed volcanic forcing for CLDERA -->
+components/eam/bld/namelist_files/use_cases/20TR_eam_CMIP6.xml:<!-- CLDERA merged volcanic emission files -->
+components/eam/cime_config/config_component.xml:      <value compset="_EAM%CMIP6-CLDERA" >-clubb_sgs -microphys mg2 -chem linoz_mam4_resus_mom_soag -rain_evap_to_coarse_aero -nlev 72</value>
+components/eam/cime_config/config_component.xml:      <!-- CLDERA support -->
+components/eam/cime_config/config_component.xml:      <value compset="CLDERA"        >-cldera_profiling</value>
+components/eam/cime_config/config_component.xml:      <value compset="2010(?:SOI)?_EAM.*CMIP6-CLDERA"  >2010_eam_CMIP6</value>
+components/eam/cime_config/config_component.xml:    <desc compset="_EAM.*CMIP6-CLDERA"    >EAM with complete set of E3SM atmospheric mods for V1 (72 layers model) and ACES4BGC SOAG emissions- CMIP6-DECK:</desc>
+components/eam/cime_config/config_component.xml:    <value compset="EAM%CMIP6-CLDERA">$SRCROOT/components/eam/cime_config/usermods_dirs/volcaero</value>
+components/eam/cime_config/config_compsets.xml:    <alias>F20TR-CLDERA</alias>
+components/eam/cime_config/config_compsets.xml:    <lname>20TR_EAM%CMIP6-CLDERA_ELM%SPBC_MPASSI%PRES_DOCN%DOM_SROF_SGLC_SWAV</lname>
+components/eam/cime_config/config_compsets.xml:    <alias>F2010-CICE-CLDERA</alias>
+components/eam/cime_config/config_compsets.xml:    <lname>2010_EAM%CMIP6-CLDERA_ELM%SPBC_CICE%PRES_DOCN%DOM_SROF_SGLC_SWAV</lname>
+components/eam/cime_config/testdefs/testmods_dirs/cldera/profiling/basic_so2_h2so4/shell_commands:cp ${CLDERA_PATH}/share/profile_so2_h2so4.yaml ${RUNDIR}/cldera_profiling_config.yaml
+components/eam/src/chemistry/modal_aero/modal_aero_amicphys.F90:#if ( defined CLDERA_STRAT_VOLC )
+components/eam/src/control/cam_comp.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/control/cam_comp.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/control/cam_comp.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/cpl/atm_comp_mct.F90:       ! Initialize CLDERA profiling *before* cam_init, since that's when
+components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/physics/cam/cldera_passive_tracers.F90:! CLDERA passive tracers
+components/eam/src/physics/cam/cldera_passive_tracers.F90:    if (masterproc) write(iulog,*) 'CLDERA PASSIVE CONSTITUENTS: INITIALIZING ',cnst_name(m),m
+components/eam/src/physics/cam/cldera_sai_tracers.F90:! CLDERA stratospheric aerosol injection tracers
+components/eam/src/physics/cam/cldera_sai_tracers.F90:      write(iulog,*) 'CLDERA SAI: REGISTERING CONSTITUENTS'
+components/eam/src/physics/cam/cldera_sai_tracers.F90:         write(iulog,*) 'CLDERA SAI: RE-INITIALIZING CONSTITUENTS'
+components/eam/src/physics/cam/cldera_sai_tracers.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner", inj_owner, ", ", myrank
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner col", inji
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner chunk", injc
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner lat0", state%lat(inji) * rad2deg 
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner lon0", state%lon(inji) * rad2deg
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner dist (km)", inj_dist / 1000.0
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection duration (hr)", dur * s2hr
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection delay (hr)", t0 * s2hr
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS normalization A (kg m / s)", A_so2
+components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS normalization sVk (1/m)", sVk
+components/eam/src/physics/cam/cldera_sai_tracers.F90:             write(iulog,*) "CLDERA_SAI_TRACERS cumulative mass error at col ", i
+components/eam/src/physics/cam/cldera_sai_tracers.F90:#if defined(CLDERA_PROFILING)
+components/eam/src/physics/cam/cldera_sai_tracers.F90:          !    write(iulog,*) "CLDERA_SAI_TRACERS PTENDSUM (kg/s) ", inject, myrank, lchnk, i, &
+components/eam/src/physics/cam/cldera_sai_tracers.F90:      write(iulog,*) 'CLDERA SAI CONSTITUENTS: INITIALIZING ',cnst_name(m),m
+components/eam/src/physics/cam/physpkg.F90:    ! Register CLDERA passive tracers
+components/eam/src/physics/cam/physpkg.F90:    ! Register CLDERA stratospheric aerosol injection tracers
+components/eam/src/physics/cam/physpkg.F90:    ! CLDERA passive tracers
+components/eam/src/physics/cam/physpkg.F90:    ! CLDERA stratospheric aerosol injection tracers
+components/eam/src/physics/cam/physpkg.F90:       ! --JH--: Allow advecting of CLDERA passive tendencies if enabled
+components/eam/src/physics/cam/physpkg.F90:       ! --JH--: Allow advancing of CLDERA SAI tendencies if enabled
+components/eam/src/physics/cam/physpkg.F90:  ! CLDERA stratopsheric aerosol injection tracers
+components/elm/cime_config/config_component.xml:      <value compset="2010(?:SOI)?_EAM%CMIP6-CLDERA-[LH]R[^_]*_ELM%[^_]*BC">-phys elm -cppdefs '-DMODAL_AER -DAPPLY_POST_DECK_BUGFIXES'</value>
+components/elm/cime_config/config_component.xml:      <value compset="20TR.*_EAM%.*CMIP6-CLDERA_ELM">20thC_CMIP6_transient</value>
+components/elm/cime_config/config_component.xml:      <value compset="2010(?:SOI)?_EAM%CMIP6-CLDERA_ELM">2010_CMIP6_control</value>
