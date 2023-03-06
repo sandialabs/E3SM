@@ -1,93 +1,240 @@
-cime_config/machines/cmake_macros/gnu_mappy.cmake:set(CLDERA_PATH "/sems-data-store/ACME/cldera/cldera-tools/install")
-cime_config/machines/cmake_macros/intel_sandiatoss3.cmake:set(CLDERA_PATH "~/cldera_work/cldera-tools-install")
-cime_config/machines/config_machines.xml:      <env name="CLDERA_PATH">~/cldera_work/cldera-tools-install</env>
-cime_config/tests.py:            "ERS_Ln9.ne4pg2_oQU480.F20TR-CLDERA.eam-prognostic_volcaero",
-components/cmake/build_model.cmake:      if (USE_CLDERA_PROFILING)
-components/cmake/build_model.cmake:          set (CLDERA_PATH_POSTFIX debug)
-components/cmake/build_model.cmake:          set (CLDERA_PATH_POSTFIX release)
-components/cmake/build_model.cmake:        message ("CLDERA root DIR: ${CLDERA_PATH}/${CLDERA_PATH_POSTFIX}")
-components/cmake/build_model.cmake:        find_package(Cldera REQUIRED PATHS ${CLDERA_PATH}/${CLDERA_PATH_POSTFIX})
-components/cmake/build_model.cmake:        target_compile_definitions(${TARGET_NAME} PRIVATE CLDERA_PROFILING)
-components/cmake/common_setup.cmake:# Detect if CLDERA profiling tool lib has to be used
-components/cmake/common_setup.cmake:string(FIND "${CAM_CONFIG_OPTS}" "-cldera_profiling" HAS_CLDERA_PROFILING)
-components/cmake/common_setup.cmake:if (NOT HAS_CLDERA_PROFILING EQUAL -1)
-components/cmake/common_setup.cmake:  set(USE_CLDERA_PROFILING TRUE)
-components/eam/bld/build-namelist:# Adding call for CLDERA prognostic stratospheric volcanic aerosol treatment
-components/eam/bld/build-namelist:my $cldera_strat_volc = $cfg->get('cldera_strat_volc'); #default should be no CLDERA treatment (0)
-components/eam/bld/build-namelist:# CLDERA AOA, E90, ST80_25 tracers
-components/eam/bld/build-namelist:# CLDERA SAI tracers
-components/eam/bld/config_files/definition.xml:Switch on (off) CLDERA aoa, e90, st80 tracers: 0=off, 1=on.
-components/eam/bld/configure:  Options for CLDERA-E3SM
-components/eam/bld/configure:     -cldera_profiling  Build EAM with support for CLDERA profiling, linking to cldera-profiling
-components/eam/bld/configure:     -cldera_passive_trcs Switch on CLDERA passive tracers. Default: off
-components/eam/bld/configure:if ($print>=2) { print "CLDERA SAI tracer package: $cldera_sai_trcs$eol"; }
-components/eam/bld/configure:if ($print>=2) { print "CLDERA passive tracer package: $cldera_passive_trcs$eol"; }
-components/eam/bld/configure:#CLDERA stratospheric volcanic aerosol treatment
-components/eam/bld/configure:    $chem_cppdefs = "$chem_cppdefs  -DCLDERA_STRAT_VOLC "
-components/eam/bld/configure:        if ($print>=2) { print "Advected constituents added by the CLDERA SAI tracer package: 5$eol"; }
-components/eam/bld/configure:        if ($print>=2) { print "Advected constituents added by the CLDERA passive tracers package: 4$eol"; }
-components/eam/bld/namelist_files/namelist_defaults_eam.xml:<!-- for CLDERA stratospheric aerosol treatment-->
-components/eam/bld/namelist_files/namelist_defaults_eam.xml:<!-- Defaults for CLDERA SAI                                            -->
-components/eam/bld/namelist_files/namelist_defaults_eam.xml:<!-- for CLDERA stratospheric aerosol treatment-->
-components/eam/bld/namelist_files/namelist_definition.xml:<!-- CLDERA passive tracers -->
-components/eam/bld/namelist_files/namelist_definition.xml:If true, CLDERA passive tracers are included.  This variable should not be set
-components/eam/bld/namelist_files/namelist_definition.xml:If true, CLDERA passive tracers are read from the initial conditions file.
-components/eam/bld/namelist_files/namelist_definition.xml:<!-- CLDERA SAI tracers -->
-components/eam/bld/namelist_files/namelist_definition.xml:If true CLDERA stratospheric aerosol injection tracers are included.  
-components/eam/bld/namelist_files/namelist_definition.xml:If true CLDERA stratospheric aerosol injection tracers are read from the initial 
-components/eam/bld/namelist_files/use_cases/1850_eam_CMIP6.xml:<!-- Removing prescribed volcanic forcing for CLDERA -->
-components/eam/bld/namelist_files/use_cases/1850_eam_CMIP6.xml:<!-- CLDERA merged volcanic emission files -->
-components/eam/bld/namelist_files/use_cases/20TR_eam_CMIP6.xml:<!-- Removing prescribed volcanic forcing for CLDERA -->
-components/eam/bld/namelist_files/use_cases/20TR_eam_CMIP6.xml:<!-- CLDERA merged volcanic emission files -->
-components/eam/cime_config/config_component.xml:      <value compset="_EAM%CMIP6-CLDERA" >-clubb_sgs -microphys mg2 -chem linoz_mam4_resus_mom_soag -rain_evap_to_coarse_aero -nlev 72</value>
-components/eam/cime_config/config_component.xml:      <!-- CLDERA support -->
-components/eam/cime_config/config_component.xml:      <value compset="CLDERA"        >-cldera_profiling</value>
-components/eam/cime_config/config_component.xml:      <value compset="2010(?:SOI)?_EAM.*CMIP6-CLDERA"  >2010_eam_CMIP6</value>
-components/eam/cime_config/config_component.xml:    <desc compset="_EAM.*CMIP6-CLDERA"    >EAM with complete set of E3SM atmospheric mods for V1 (72 layers model) and ACES4BGC SOAG emissions- CMIP6-DECK:</desc>
-components/eam/cime_config/config_component.xml:    <value compset="EAM%CMIP6-CLDERA">$SRCROOT/components/eam/cime_config/usermods_dirs/volcaero</value>
-components/eam/cime_config/config_compsets.xml:    <alias>F20TR-CLDERA</alias>
-components/eam/cime_config/config_compsets.xml:    <lname>20TR_EAM%CMIP6-CLDERA_ELM%SPBC_MPASSI%PRES_DOCN%DOM_SROF_SGLC_SWAV</lname>
-components/eam/cime_config/config_compsets.xml:    <alias>F2010-CICE-CLDERA</alias>
-components/eam/cime_config/config_compsets.xml:    <lname>2010_EAM%CMIP6-CLDERA_ELM%SPBC_CICE%PRES_DOCN%DOM_SROF_SGLC_SWAV</lname>
-components/eam/cime_config/testdefs/testmods_dirs/cldera/profiling/basic_so2_h2so4/shell_commands:cp ${CLDERA_PATH}/share/profile_so2_h2so4.yaml ${RUNDIR}/cldera_profiling_config.yaml
-components/eam/src/chemistry/modal_aero/modal_aero_amicphys.F90:#if ( defined CLDERA_STRAT_VOLC )
-components/eam/src/control/cam_comp.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/control/cam_comp.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/control/cam_comp.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/cpl/atm_comp_mct.F90:       ! Initialize CLDERA profiling *before* cam_init, since that's when
-components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/cpl/atm_comp_mct.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/physics/cam/cldera_passive_tracers.F90:! CLDERA passive tracers
-components/eam/src/physics/cam/cldera_passive_tracers.F90:    if (masterproc) write(iulog,*) 'CLDERA PASSIVE CONSTITUENTS: INITIALIZING ',cnst_name(m),m
-components/eam/src/physics/cam/cldera_sai_tracers.F90:! CLDERA stratospheric aerosol injection tracers
-components/eam/src/physics/cam/cldera_sai_tracers.F90:      write(iulog,*) 'CLDERA SAI: REGISTERING CONSTITUENTS'
-components/eam/src/physics/cam/cldera_sai_tracers.F90:         write(iulog,*) 'CLDERA SAI: RE-INITIALIZING CONSTITUENTS'
-components/eam/src/physics/cam/cldera_sai_tracers.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner", inj_owner, ", ", myrank
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner col", inji
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner chunk", injc
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner lat0", state%lat(inji) * rad2deg 
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner lon0", state%lon(inji) * rad2deg
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection owner dist (km)", inj_dist / 1000.0
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection duration (hr)", dur * s2hr
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS injection delay (hr)", t0 * s2hr
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS normalization A (kg m / s)", A_so2
-components/eam/src/physics/cam/cldera_sai_tracers.F90:        write(iulog,*) "CLDERA_SAI_TRACERS normalization sVk (1/m)", sVk
-components/eam/src/physics/cam/cldera_sai_tracers.F90:             write(iulog,*) "CLDERA_SAI_TRACERS cumulative mass error at col ", i
-components/eam/src/physics/cam/cldera_sai_tracers.F90:#if defined(CLDERA_PROFILING)
-components/eam/src/physics/cam/cldera_sai_tracers.F90:          !    write(iulog,*) "CLDERA_SAI_TRACERS PTENDSUM (kg/s) ", inject, myrank, lchnk, i, &
-components/eam/src/physics/cam/cldera_sai_tracers.F90:      write(iulog,*) 'CLDERA SAI CONSTITUENTS: INITIALIZING ',cnst_name(m),m
-components/eam/src/physics/cam/physpkg.F90:    ! Register CLDERA passive tracers
-components/eam/src/physics/cam/physpkg.F90:    ! Register CLDERA stratospheric aerosol injection tracers
-components/eam/src/physics/cam/physpkg.F90:    ! CLDERA passive tracers
-components/eam/src/physics/cam/physpkg.F90:    ! CLDERA stratospheric aerosol injection tracers
-components/eam/src/physics/cam/physpkg.F90:       ! --JH--: Allow advecting of CLDERA passive tendencies if enabled
-components/eam/src/physics/cam/physpkg.F90:       ! --JH--: Allow advancing of CLDERA SAI tendencies if enabled
-components/eam/src/physics/cam/physpkg.F90:  ! CLDERA stratopsheric aerosol injection tracers
-components/elm/cime_config/config_component.xml:      <value compset="2010(?:SOI)?_EAM%CMIP6-CLDERA-[LH]R[^_]*_ELM%[^_]*BC">-phys elm -cppdefs '-DMODAL_AER -DAPPLY_POST_DECK_BUGFIXES'</value>
-components/elm/cime_config/config_component.xml:      <value compset="20TR.*_EAM%.*CMIP6-CLDERA_ELM">20thC_CMIP6_transient</value>
-components/elm/cime_config/config_component.xml:      <value compset="2010(?:SOI)?_EAM%CMIP6-CLDERA_ELM">2010_CMIP6_control</value>
+cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    ./xmlchange --id NTASKS --val 8192
+cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    echo "new NTASKS=8192"
+cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    echo "ne4 grid, setting NTASKS_LND to 128"
+cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    ./xmlchange --id NTASKS_LND --val 128
+cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    echo "ne4 grid, setting NTASKS_ATM to 96"
+cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    ./xmlchange --id NTASKS_ATM --val 96
+cime_config/testmods_dirs/bench/gmpas_noio/shell_commands:if [ `./xmlquery --value NTASKS_ATM` -gt 9600 ]; then ./xmlchange NTASKS_ATM=9600; fi
+components/cice/cime_config/buildnml:    ntasks_ice         = case.get_value("NTASKS_ICE")
+components/cice/docs/UsersGuide/ice_troubleshoot.tex:100 longitude points.  To fix this error, change the value of {\tt \$NTASKS} 
+components/cice/docs/UsersGuide/ice_usrdoc/node38.html:100 longitude points.  To fix this error, change the value of <TT>$NTASKS</TT> 
+components/eam/cime_config/buildnml:    ntasks_atm		= case.get_value("NTASKS_ATM")
+components/eam/cime_config/testdefs/testmods_dirs/eam/bench/noio/shell_commands:  if [ `./xmlquery --value NTASKS_LND` -gt 3844 ]; then ./xmlchange NTHRDS_LND=1; fi
+components/eam/cime_config/usermods_dirs/scm/shell_commands: ./xmlchange NTASKS_$component=1
+components/eam/test/system/TCB_ccsm.sh:    echo "./xmlchange -file env_mach_pes.xml -id NTASKS_${comp} -val $CAM_TASKS"
+components/eam/test/system/TCB_ccsm.sh:    ./xmlchange -file env_mach_pes.xml -id NTASKS_${comp} -val $CAM_TASKS
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_ATM=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_LND=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_ICE=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_OCN=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_CPL=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_GLC=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_ROF=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_WAV=1
+components/elm/cime_config/testdefs/testmods_dirs/elm/usrdat/shell_commands:./xmlchange NTASKS=1
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_ATM -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_LND -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_ICE -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_OCN -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_CPL -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_GLC -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_ROF -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_WAV -val '+str(options.np))
+components/elm/tools/OLMT/pointCLM.py:                  +'NTASKS_LND -val '+options.ninst)
+components/elm/tools/OLMT/runcase.py:    print 'Setting NTASKS_'+c+' to '+str(options.np)
+components/elm/tools/OLMT/runcase.py:    os.system('./xmlchange NTASKS_'+c+'='+str(options.np))
+components/elm/tools/OLMT/runcase.py:    os.system('./xmlchange NTASKS_LND='+options.ninst)
+components/mpas-albany-landice/bld/build-namelist:     -ntasks_glc           NTASKS_GLC for this case
+components/mpas-albany-landice/bld/build-namelist:my $NTASKS_GLC        = $opts{'ntasks_glc'};
+components/mpas-albany-landice/bld/build-namelist:my $ntasks = $NTASKS_GLC / $NINST_GLC; 
+components/mpas-albany-landice/bld/build-namelist:my $block_decomp_file = $block_decomp_file_prefix . $NTASKS_GLC;
+components/mpas-albany-landice/bld/build-namelist:print $input_list "graph$NTASKS_GLC = $block_decomp_file\n";
+components/mpas-albany-landice/cime_config/buildnml:    ntasks_glc        = case.get_value("NTASKS_PER_INST_GLC")
+components/mpas-ocean/bld/build-namelist:     -ntasks_ocn           NTASKS_OCN for this case
+components/mpas-ocean/bld/build-namelist:my $NTASKS_OCN    = $opts{'ntasks_ocn'};
+components/mpas-ocean/bld/build-namelist:my $ntasks = $NTASKS_OCN / $NINST_OCN;
+components/mpas-ocean/bld/build-namelist:my $block_decomp_file = $block_decomp_file_prefix . $NTASKS_OCN;
+components/mpas-ocean/bld/build-namelist:print $input_list "graph$NTASKS_OCN = $block_decomp_file\n";
+components/mpas-ocean/cime_config/buildnml:    ntasks_ocn        = case.get_value("NTASKS_PER_INST_OCN")
+components/mpas-seaice/bld/build-namelist:     -ntasks_ice           NTASKS_ICE for this case
+components/mpas-seaice/bld/build-namelist:my $NTASKS_ICE      = $opts{'ntasks_ice'};
+components/mpas-seaice/bld/build-namelist:my $ntasks = $NTASKS_ICE / $NINST_ICE; 
+components/mpas-seaice/bld/build-namelist:my $block_decomp_file = $block_decomp_file_prefix . $NTASKS_ICE;
+components/mpas-seaice/bld/build-namelist:print $input_list "graph$NTASKS_ICE = $block_decomp_file\n";
+components/mpas-seaice/cime_config/buildnml:    ntasks_ice       = case.get_value("NTASKS_PER_INST_ICE")
+driver-mct/cime_config/config_component.xml:  <entry id="NTASKS">
+driver-mct/cime_config/config_component.xml:  <entry id="NTASKS_PER_INST">
+driver-mct/cime_config/config_component.xml:    <desc>Number of tasks per instance for each component. DO NOT EDIT: Set automatically by case.setup based on NTASKS, NINST and MULTI_DRIVER</desc>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="atm_ntasks" modify_via_xml="NTASKS_ATM">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_ATM in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ATM</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="lnd_ntasks" modify_via_xml="NTASKS_LND">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_LND</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="ice_ntasks" modify_via_xml="NTASKS_ICE">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_ICE in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ICE</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="ocn_ntasks" modify_via_xml="NTASKS_OCN">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_OCN in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_OCN</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="glc_ntasks" modify_via_xml="NTASKS_GLC">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_GLC in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_GLC</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="wav_ntasks" modify_via_xml="NTASKS_WAV">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_WAV in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_WAV</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="iac_ntasks" modify_via_xml="NTASKS_IAC">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_IAC in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_IAC</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="rof_ntasks" modify_via_xml="NTASKS_ROF">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ROF</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="esp_ntasks" modify_via_xml="NTASKS_ESP">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_ESP in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ESP</value>
+driver-mct/cime_config/namelist_definition_drv.xml:  <entry  id="cpl_ntasks" modify_via_xml="NTASKS_CPL">
+driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_CPL in env_configure.xml.
+driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_CPL</value>
+driver-moab/cime_config/config_component.xml:  <entry id="NTASKS">
+driver-moab/cime_config/config_component.xml:  <entry id="NTASKS_PER_INST">
+driver-moab/cime_config/config_component.xml:    <desc>Number of tasks per instance for each component. DO NOT EDIT: Set automatically by case.setup based on NTASKS, NINST and MULTI_DRIVER</desc>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="atm_ntasks" modify_via_xml="NTASKS_ATM">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_ATM in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ATM</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="lnd_ntasks" modify_via_xml="NTASKS_LND">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_LND</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="ice_ntasks" modify_via_xml="NTASKS_ICE">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_ICE in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ICE</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="ocn_ntasks" modify_via_xml="NTASKS_OCN">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_OCN in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_OCN</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="glc_ntasks" modify_via_xml="NTASKS_GLC">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_GLC in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_GLC</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="wav_ntasks" modify_via_xml="NTASKS_WAV">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_WAV in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_WAV</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="iac_ntasks" modify_via_xml="NTASKS_IAC">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_IAC in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_IAC</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="rof_ntasks" modify_via_xml="NTASKS_ROF">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ROF</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="esp_ntasks" modify_via_xml="NTASKS_ESP">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_ESP in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ESP</value>
+driver-moab/cime_config/namelist_definition_drv.xml:  <entry  id="cpl_ntasks" modify_via_xml="NTASKS_CPL">
+driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_CPL in env_configure.xml.
+driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_CPL</value>
+junk:cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    ./xmlchange --id NTASKS --val 8192
+junk:cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    echo "new NTASKS=8192"
+junk:cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    echo "ne4 grid, setting NTASKS_LND to 128"
+junk:cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    ./xmlchange --id NTASKS_LND --val 128
+junk:cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    echo "ne4 grid, setting NTASKS_ATM to 96"
+junk:cime_config/testmods_dirs/allactive/mach/pet/shell_commands:    ./xmlchange --id NTASKS_ATM --val 96
+junk:cime_config/testmods_dirs/bench/gmpas_noio/shell_commands:if [ `./xmlquery --value NTASKS_ATM` -gt 9600 ]; then ./xmlchange NTASKS_ATM=9600; fi
+junk:components/cice/cime_config/buildnml:    ntasks_ice         = case.get_value("NTASKS_ICE")
+junk:components/cice/docs/UsersGuide/ice_troubleshoot.tex:100 longitude points.  To fix this error, change the value of {\tt \$NTASKS} 
+junk:components/cice/docs/UsersGuide/ice_usrdoc/node38.html:100 longitude points.  To fix this error, change the value of <TT>$NTASKS</TT> 
+junk:components/eam/cime_config/buildnml:    ntasks_atm		= case.get_value("NTASKS_ATM")
+junk:components/eam/cime_config/testdefs/testmods_dirs/eam/bench/noio/shell_commands:  if [ `./xmlquery --value NTASKS_LND` -gt 3844 ]; then ./xmlchange NTHRDS_LND=1; fi
+junk:components/eam/cime_config/usermods_dirs/scm/shell_commands: ./xmlchange NTASKS_$component=1
+junk:components/eam/test/system/TCB_ccsm.sh:    echo "./xmlchange -file env_mach_pes.xml -id NTASKS_${comp} -val $CAM_TASKS"
+junk:components/eam/test/system/TCB_ccsm.sh:    ./xmlchange -file env_mach_pes.xml -id NTASKS_${comp} -val $CAM_TASKS
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_ATM=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_LND=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_ICE=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_OCN=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_CPL=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_GLC=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_ROF=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/pts/shell_commands:./xmlchange NTASKS_WAV=1
+junk:components/elm/cime_config/testdefs/testmods_dirs/elm/usrdat/shell_commands:./xmlchange NTASKS=1
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_ATM -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_LND -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_ICE -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_OCN -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_CPL -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_GLC -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_ROF -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:os.system('./xmlchange -file env_mach_pes.xml -id NTASKS_WAV -val '+str(options.np))
+junk:components/elm/tools/OLMT/pointCLM.py:                  +'NTASKS_LND -val '+options.ninst)
+junk:components/elm/tools/OLMT/runcase.py:    print 'Setting NTASKS_'+c+' to '+str(options.np)
+junk:components/elm/tools/OLMT/runcase.py:    os.system('./xmlchange NTASKS_'+c+'='+str(options.np))
+junk:components/elm/tools/OLMT/runcase.py:    os.system('./xmlchange NTASKS_LND='+options.ninst)
+junk:components/mpas-albany-landice/bld/build-namelist:     -ntasks_glc           NTASKS_GLC for this case
+junk:components/mpas-albany-landice/bld/build-namelist:my $NTASKS_GLC        = $opts{'ntasks_glc'};
+junk:components/mpas-albany-landice/bld/build-namelist:my $ntasks = $NTASKS_GLC / $NINST_GLC; 
+junk:components/mpas-albany-landice/bld/build-namelist:my $block_decomp_file = $block_decomp_file_prefix . $NTASKS_GLC;
+junk:components/mpas-albany-landice/bld/build-namelist:print $input_list "graph$NTASKS_GLC = $block_decomp_file\n";
+junk:components/mpas-albany-landice/cime_config/buildnml:    ntasks_glc        = case.get_value("NTASKS_PER_INST_GLC")
+junk:components/mpas-ocean/bld/build-namelist:     -ntasks_ocn           NTASKS_OCN for this case
+junk:components/mpas-ocean/bld/build-namelist:my $NTASKS_OCN    = $opts{'ntasks_ocn'};
+junk:components/mpas-ocean/bld/build-namelist:my $ntasks = $NTASKS_OCN / $NINST_OCN;
+junk:components/mpas-ocean/bld/build-namelist:my $block_decomp_file = $block_decomp_file_prefix . $NTASKS_OCN;
+junk:components/mpas-ocean/bld/build-namelist:print $input_list "graph$NTASKS_OCN = $block_decomp_file\n";
+junk:components/mpas-ocean/cime_config/buildnml:    ntasks_ocn        = case.get_value("NTASKS_PER_INST_OCN")
+junk:components/mpas-seaice/bld/build-namelist:     -ntasks_ice           NTASKS_ICE for this case
+junk:components/mpas-seaice/bld/build-namelist:my $NTASKS_ICE      = $opts{'ntasks_ice'};
+junk:components/mpas-seaice/bld/build-namelist:my $ntasks = $NTASKS_ICE / $NINST_ICE; 
+junk:components/mpas-seaice/bld/build-namelist:my $block_decomp_file = $block_decomp_file_prefix . $NTASKS_ICE;
+junk:components/mpas-seaice/bld/build-namelist:print $input_list "graph$NTASKS_ICE = $block_decomp_file\n";
+junk:components/mpas-seaice/cime_config/buildnml:    ntasks_ice       = case.get_value("NTASKS_PER_INST_ICE")
+junk:driver-mct/cime_config/config_component.xml:  <entry id="NTASKS">
+junk:driver-mct/cime_config/config_component.xml:  <entry id="NTASKS_PER_INST">
+junk:driver-mct/cime_config/config_component.xml:    <desc>Number of tasks per instance for each component. DO NOT EDIT: Set automatically by case.setup based on NTASKS, NINST and MULTI_DRIVER</desc>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="atm_ntasks" modify_via_xml="NTASKS_ATM">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_ATM in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ATM</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="lnd_ntasks" modify_via_xml="NTASKS_LND">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_LND</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="ice_ntasks" modify_via_xml="NTASKS_ICE">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_ICE in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ICE</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="ocn_ntasks" modify_via_xml="NTASKS_OCN">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_OCN in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_OCN</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="glc_ntasks" modify_via_xml="NTASKS_GLC">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_GLC in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_GLC</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="wav_ntasks" modify_via_xml="NTASKS_WAV">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_WAV in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_WAV</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="iac_ntasks" modify_via_xml="NTASKS_IAC">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_IAC in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_IAC</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="rof_ntasks" modify_via_xml="NTASKS_ROF">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ROF</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry id="esp_ntasks" modify_via_xml="NTASKS_ESP">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_ESP in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ESP</value>
+junk:driver-mct/cime_config/namelist_definition_drv.xml:  <entry  id="cpl_ntasks" modify_via_xml="NTASKS_CPL">
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      set by NTASKS_CPL in env_configure.xml.
+junk:driver-mct/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_CPL</value>
+junk:driver-moab/cime_config/config_component.xml:  <entry id="NTASKS">
+junk:driver-moab/cime_config/config_component.xml:  <entry id="NTASKS_PER_INST">
+junk:driver-moab/cime_config/config_component.xml:    <desc>Number of tasks per instance for each component. DO NOT EDIT: Set automatically by case.setup based on NTASKS, NINST and MULTI_DRIVER</desc>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="atm_ntasks" modify_via_xml="NTASKS_ATM">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_ATM in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ATM</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="lnd_ntasks" modify_via_xml="NTASKS_LND">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_LND</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="ice_ntasks" modify_via_xml="NTASKS_ICE">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_ICE in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ICE</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="ocn_ntasks" modify_via_xml="NTASKS_OCN">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_OCN in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_OCN</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="glc_ntasks" modify_via_xml="NTASKS_GLC">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_GLC in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_GLC</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="wav_ntasks" modify_via_xml="NTASKS_WAV">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_WAV in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_WAV</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="iac_ntasks" modify_via_xml="NTASKS_IAC">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_IAC in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_IAC</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="rof_ntasks" modify_via_xml="NTASKS_ROF">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_LND in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ROF</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry id="esp_ntasks" modify_via_xml="NTASKS_ESP">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_ESP in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_ESP</value>
+junk:driver-moab/cime_config/namelist_definition_drv.xml:  <entry  id="cpl_ntasks" modify_via_xml="NTASKS_CPL">
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      set by NTASKS_CPL in env_configure.xml.
+junk:driver-moab/cime_config/namelist_definition_drv.xml:      <value>$NTASKS_CPL</value>
