@@ -171,6 +171,8 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
   use control_mod, only: ftype
   use physics_buffer, only : physics_buffer_desc
   use hycoef,      only: hyam, hybm
+  use dimensions_mod,  only: nelemd
+ 
   use se_single_column_mod, only: scm_setfield, scm_setinitial
   implicit none
 !
@@ -184,6 +186,7 @@ subroutine stepon_run1( dtime_out, phys_state, phys_tend,               &
    type (dyn_export_t), intent(inout) :: dyn_out ! Dynamics export container
    type (physics_buffer_desc), pointer :: pbuf2d(:,:)
    type (element_t), pointer :: elem(:)
+   integer :: pv_idx, ie
 
 !-----------------------------------------------------------------------
 
@@ -233,6 +236,7 @@ subroutine stepon_run2(phys_state, phys_tend, dyn_in, dyn_out )
    use prim_driver_base,only: applyCAMforcing_tracers
    use prim_advance_mod,only: applyCAMforcing_dynamics
    use element_ops,     only: get_temperature
+ 
 
    type(physics_state), intent(inout) :: phys_state(begchunk:endchunk)
    type(physics_tend),  intent(inout) :: phys_tend(begchunk:endchunk)
@@ -341,6 +345,8 @@ subroutine stepon_run2(phys_state, phys_tend, dyn_in, dyn_out )
       endif ! .not. single_column
 
       tl_f = TimeLevel%n0   ! timelevel which was adjusted by physics
+
+
 
       call TimeLevel_Qdp(TimeLevel, qsplit, tl_fQdp)
 
@@ -506,13 +512,15 @@ subroutine stepon_run3(dtime, cam_out, phys_state, dyn_in, dyn_out)
    real(r8) :: out_temp(npsq,nlev), out_q(npsq,nlev), out_u(npsq,nlev), &
                out_v(npsq,nlev), out_psv(npsq)  
    real(r8), parameter :: rad2deg = 180.0 / SHR_CONST_PI
-   real(r8), parameter :: fac = 1000._r8	     
+  real(r8), parameter :: fac = 1000._r8	     
    type(cam_out_t),     intent(inout) :: cam_out(:) ! Output from CAM to surface
    type(physics_state), intent(inout) :: phys_state(begchunk:endchunk)
    type (dyn_import_t), intent(inout) :: dyn_in  ! Dynamics import container
    type (dyn_export_t), intent(inout) :: dyn_out ! Dynamics export container
    type (element_t), pointer :: elem(:)
    integer :: rc, i, j, k, p, ie, tl_f
+   integer :: pv_idx
+ 
 #if defined (E3SM_SCM_REPLAY)
    real(r8) :: forcing_temp(npsq,nlev), forcing_q(npsq,nlev,pcnst)
 #endif   
@@ -543,11 +551,14 @@ subroutine stepon_run3(dtime, cam_out, phys_state, dyn_in, dyn_out)
      endif   
 
    endif   
-
+ 
+ 
    call t_barrierf('sync_dyn_run', mpicom)
    call t_startf ('dyn_run')
    call dyn_run(dyn_out,rc)	
    call t_stopf  ('dyn_run')
+
+ 
    
    ! Update to get tendency 
 #if (defined E3SM_SCM_REPLAY) 
