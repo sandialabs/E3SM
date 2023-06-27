@@ -1232,7 +1232,7 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
        ! Dump dynamics variables to history buffers
        call diag_phys_writeout(phys_state(c))
 
-       ! --JH--: Allow evolution of CLDERA passive tendencies if enabled
+       ! --JH--: Allow evolution of CLDERA tracer tendencies if enabled
        call cldera_dynamic_tracers_timestep_tend(phys_state(c), ptend(c), ztodt, phys_state(c)%ncol)
        call cldera_passive_tracers_timestep_tend(phys_state(c), ptend(c), ztodt, dummy_cflx)
        call physics_update(phys_state(c), ptend(c), ztodt, phys_tend(c))
