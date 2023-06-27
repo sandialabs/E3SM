@@ -47,7 +47,7 @@ module cldera_dynamic_tracers
   character(len=8), parameter :: pv_out_name = 'PV_TRCR    '
 
   integer :: ifirst ! global index of first constituent
-  integer :: ixpv   ! global index for PV tracer
+  integer :: ixpv  ! global index for PV tracer
   integer :: ixpt  ! global index for PT tracer
 
   ! Data from namelist variables
