@@ -26,7 +26,7 @@ module cldera_dynamic_tracers
   ! Public interfaces
   public :: cldera_dynamic_tracers_register        ! register constituents
   public :: cldera_dynamic_tracers_implements_cnst ! true if constituent is implemented by this package
-  public :: cldera_dynamic_tracers_is_pt ! true if constituent is implemented by this package
+  public :: cldera_dynamic_tracers_is_pt
   public :: cldera_dynamic_tracers_is_pv ! true if constituent is implemented by this package
   public :: cldera_dynamic_tracers_is_enabled ! true if constituent is implemented by this package
   public :: cldera_dynamic_tracers_init            ! initialize history fields, datasets
