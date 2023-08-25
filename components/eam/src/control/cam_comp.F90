@@ -238,7 +238,9 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
    enddo
    dimnames(1) = "ncol"
 
-   ! Col GIDs and area
+   !-------------------------------------------------!
+   !               Col GIDs and area                 !
+   !-------------------------------------------------!
    ! NOTE: .false. is to declare the field as a Copy of input data, rather than a view
    dims(1) = nlcols
    allocate(cols_gids(pcols))
@@ -262,7 +264,9 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
      call cldera_set_field_part_data("area",ipart,cols_area)
    enddo
 
-   ! PBUF fields
+   !-------------------------------------------------!
+   !                   PBUF fields                   !
+   !-------------------------------------------------!
    nfields = size(pbuf2d,1)
    do idx=1,nfields
      ! retrieve fields
@@ -309,7 +313,9 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
      enddo
    enddo
 
-   ! TRACERS fields
+   !-------------------------------------------------!
+   !                TRACERS fields                   !
+   !-------------------------------------------------!
    dims(2) = plev
    dimnames(2) = "lev"
    do idx=1,pcnst
@@ -325,7 +331,9 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
      enddo
    enddo
 
-   ! STATE fields
+   !-------------------------------------------------!
+   !                  STATE fields                   !
+   !-------------------------------------------------!
    dims(1) = nlcols
    dimnames(1) = 'ncol'
 
@@ -465,10 +473,190 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
      call cldera_set_field_part_size("aod_sulf",ipart,ncols)
    enddo
 
+   !-------------------------------------------------!
+   !            SURFACE COUPLING fields              !
+   !-------------------------------------------------!
+   dims(1) = nlcols
+   dimnames(1) = 'ncol'
+   call cldera_add_partitioned_field("tbot"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("zbot"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("ubot"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("vbot"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("pbot"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("rho"      ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("netsw"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("flwds"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("precsc"   ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("precsl"   ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("precc"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("precl"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("soll"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("sols"     ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("solld"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("solsd"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("thbot"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("co2prog"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("co2diag"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("psl"      ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("bcphiwet" ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("bcphidry" ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("bcphodry" ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("ocphiwet" ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("ocphidry" ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("ocphodry" ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstwet1"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstdry1"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstwet2"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstdry2"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstwet3"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstdry3"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstwet4"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("dstdry4"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("wsresp"   ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("tau_est"  ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("ugust"    ,1,dims,dimnames,nparts,part_dim)
+   call cldera_add_partitioned_field("uovern"   ,1,dims,dimnames,nparts,part_dim)
+
+   dims(2) = pcnst
+   dimnames(2) = 'pcnst'
+   call cldera_add_partitioned_field("qbot"     ,2,dims,dimnames,nparts,part_dim)
+
+   ! Set fields data
+   do ipart = 1,nparts
+     c = begchunk+ipart-1 ! Chunk
+     ncols = cam_out(c)%ncol
+
+     field1d => cam_out(c)%tbot(:)
+     call cldera_set_field_part_size("tbot"    ,ipart,ncols)
+     call cldera_set_field_part_data("tbot"    ,ipart,field1d)
+     field1d => cam_out(c)%zbot(:)
+     call cldera_set_field_part_size("zbot"    ,ipart,ncols)
+     call cldera_set_field_part_data("zbot"    ,ipart,field1d)
+     field1d => cam_out(c)%ubot(:)
+     call cldera_set_field_part_size("ubot"    ,ipart,ncols)
+     call cldera_set_field_part_data("ubot"    ,ipart,field1d)
+     field1d => cam_out(c)%vbot(:)
+     call cldera_set_field_part_size("vbot"    ,ipart,ncols)
+     call cldera_set_field_part_data("vbot"    ,ipart,field1d)
+     field1d => cam_out(c)%pbot(:)
+     call cldera_set_field_part_size("pbot"    ,ipart,ncols)
+     call cldera_set_field_part_data("pbot"    ,ipart,field1d)
+     field1d => cam_out(c)%thbot(:)
+     call cldera_set_field_part_size("thbot"   ,ipart,ncols)
+     call cldera_set_field_part_data("thbot"   ,ipart,field1d)
+     field2d => cam_out(c)%qbot(:,:)
+     call cldera_set_field_part_size("qbot"   ,ipart,ncols)
+     call cldera_set_field_part_data("qbot"   ,ipart,field2d)
+
+     field1d => cam_out(c)%psl(:)
+     call cldera_set_field_part_size("psl"     ,ipart,ncols)
+     call cldera_set_field_part_data("psl"     ,ipart,field1d)
+     field1d => cam_out(c)%rho(:)
+     call cldera_set_field_part_size("rho"     ,ipart,ncols)
+     call cldera_set_field_part_data("rho"     ,ipart,field1d)
+
+     field1d => cam_out(c)%netsw(:)
+     call cldera_set_field_part_size("netsw"   ,ipart,ncols)
+     call cldera_set_field_part_data("netsw"   ,ipart,field1d)
+     field1d => cam_out(c)%flwds(:)
+     call cldera_set_field_part_size("flwds"   ,ipart,ncols)
+     call cldera_set_field_part_data("flwds"   ,ipart,field1d)
+
+     field1d => cam_out(c)%precsc(:)
+     call cldera_set_field_part_size("precsc"  ,ipart,ncols)
+     call cldera_set_field_part_data("precsc"  ,ipart,field1d)
+     field1d => cam_out(c)%precsl(:)
+     call cldera_set_field_part_size("precsl"  ,ipart,ncols)
+     call cldera_set_field_part_data("precsl"  ,ipart,field1d)
+     field1d => cam_out(c)%precc(:)
+     call cldera_set_field_part_size("precc"   ,ipart,ncols)
+     call cldera_set_field_part_data("precc"   ,ipart,field1d)
+     field1d => cam_out(c)%precl(:)
+     call cldera_set_field_part_size("precl"   ,ipart,ncols)
+     call cldera_set_field_part_data("precl"   ,ipart,field1d)
+
+     field1d => cam_out(c)%soll(:)
+     call cldera_set_field_part_size("soll"    ,ipart,ncols)
+     call cldera_set_field_part_data("soll"    ,ipart,field1d)
+     field1d => cam_out(c)%sols(:)
+     call cldera_set_field_part_size("sols"    ,ipart,ncols)
+     call cldera_set_field_part_data("sols"    ,ipart,field1d)
+     field1d => cam_out(c)%solld(:)
+     call cldera_set_field_part_size("solld"   ,ipart,ncols)
+     call cldera_set_field_part_data("solld"   ,ipart,field1d)
+     field1d => cam_out(c)%solsd(:)
+     call cldera_set_field_part_size("solsd"   ,ipart,ncols)
+     call cldera_set_field_part_data("solsd"   ,ipart,field1d)
+
+     field1d => cam_out(c)%co2prog(:)
+     call cldera_set_field_part_size("co2prog" ,ipart,ncols)
+     call cldera_set_field_part_data("co2prog" ,ipart,field1d)
+     field1d => cam_out(c)%co2diag(:)
+     call cldera_set_field_part_size("co2diag" ,ipart,ncols)
+     call cldera_set_field_part_data("co2diag" ,ipart,field1d)
+
+     field1d => cam_out(c)%bcphiwet(:)
+     call cldera_set_field_part_size("bcphiwet",ipart,ncols)
+     call cldera_set_field_part_data("bcphiwet",ipart,field1d)
+     field1d => cam_out(c)%bcphidry(:)
+     call cldera_set_field_part_size("bcphidry",ipart,ncols)
+     call cldera_set_field_part_data("bcphidry",ipart,field1d)
+     field1d => cam_out(c)%bcphodry(:)
+     call cldera_set_field_part_size("bcphodry",ipart,ncols)
+     call cldera_set_field_part_data("bcphodry",ipart,field1d)
+
+     field1d => cam_out(c)%ocphiwet(:)
+     call cldera_set_field_part_size("ocphiwet",ipart,ncols)
+     call cldera_set_field_part_data("ocphiwet",ipart,field1d)
+     field1d => cam_out(c)%ocphidry(:)
+     call cldera_set_field_part_size("ocphidry",ipart,ncols)
+     call cldera_set_field_part_data("ocphidry",ipart,field1d)
+     field1d => cam_out(c)%ocphodry(:)
+     call cldera_set_field_part_size("ocphodry",ipart,ncols)
+     call cldera_set_field_part_data("ocphodry",ipart,field1d)
+
+     field1d => cam_out(c)%dstwet1(:)
+     call cldera_set_field_part_size("dstwet1" ,ipart,ncols)
+     call cldera_set_field_part_data("dstwet1" ,ipart,field1d)
+     field1d => cam_out(c)%dstdry1(:)
+     call cldera_set_field_part_size("dstdry1" ,ipart,ncols)
+     call cldera_set_field_part_data("dstdry1" ,ipart,field1d)
+     field1d => cam_out(c)%dstwet2(:)
+     call cldera_set_field_part_size("dstwet2" ,ipart,ncols)
+     call cldera_set_field_part_data("dstwet2" ,ipart,field1d)
+     field1d => cam_out(c)%dstdry2(:)
+     call cldera_set_field_part_size("dstdry2" ,ipart,ncols)
+     call cldera_set_field_part_data("dstdry2" ,ipart,field1d)
+     field1d => cam_out(c)%dstwet3(:)
+     call cldera_set_field_part_size("dstwet3" ,ipart,ncols)
+     call cldera_set_field_part_data("dstwet3" ,ipart,field1d)
+     field1d => cam_out(c)%dstdry3(:)
+     call cldera_set_field_part_size("dstdry3" ,ipart,ncols)
+     call cldera_set_field_part_data("dstdry3" ,ipart,field1d)
+     field1d => cam_out(c)%dstwet4(:)
+     call cldera_set_field_part_size("dstwet4" ,ipart,ncols)
+     call cldera_set_field_part_data("dstwet4" ,ipart,field1d)
+     field1d => cam_out(c)%dstdry4(:)
+     call cldera_set_field_part_size("dstdry4" ,ipart,ncols)
+     call cldera_set_field_part_data("dstdry4" ,ipart,field1d)
+
+     field1d => cam_out(c)%wsresp(:)
+     call cldera_set_field_part_size("wsresp"  ,ipart,ncols)
+     call cldera_set_field_part_data("wsresp"  ,ipart,field1d)
+     field1d => cam_out(c)%tau_est(:)
+     call cldera_set_field_part_size("tau_est" ,ipart,ncols)
+     call cldera_set_field_part_data("tau_est" ,ipart,field1d)
+     field1d => cam_out(c)%ugust(:)
+     call cldera_set_field_part_size("ugust"   ,ipart,ncols)
+     call cldera_set_field_part_data("ugust"   ,ipart,field1d)
+     field1d => cam_out(c)%uovern(:)
+     call cldera_set_field_part_size("uovern"  ,ipart,ncols)
+     call cldera_set_field_part_data("uovern"  ,ipart,field1d)
+   enddo
+
    call cldera_commit_all_fields()
    call t_stopf('cldera_add_fields')
 #endif
-
 
 end subroutine cam_init
 
