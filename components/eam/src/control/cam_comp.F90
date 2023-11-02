@@ -594,7 +594,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
        call cldera_set_field_part_size("QRLC"//diag(icall), ipart,ncols)
      end do
      call cldera_set_field_part_size("AODSO4", ipart,ncols)
-     call cldera_set_field_part_size("BURDENSO4"   , ipart,ncols)
+     call cldera_set_field_part_size("BURDENSO4", ipart,ncols)
      call cldera_set_field_part_size("Mass_so4", ipart,ncols)
      do tag_loop = 1,3 ! only three tags needed for now
        call cldera_set_field_part_size("AODSO4"//tagged_suffix(tag_loop), ipart,ncols)

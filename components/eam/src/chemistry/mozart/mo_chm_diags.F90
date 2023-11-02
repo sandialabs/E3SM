@@ -756,6 +756,7 @@ contains
        call outfld( 'Mass_soa', mass_soa(:ncol,:,:),ncol,lchnk)
     end if
     endif
+
 #if defined(CLDERA_PROFILING)
     if (nso4>1) then
        do tag_loop = 1,nso4
