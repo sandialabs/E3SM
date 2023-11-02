@@ -635,7 +635,7 @@ contains
        call outfld( 'Mass_soa', mass_soa(:ncol,:),ncol,lchnk)
     endif
 #if defined(CLDERA_PROFILING)
-    call cldera_set_field_part_data("Mass_so4" ,lchnk-begchunk+1,mass_so4(:ncol,:,:))
+    call cldera_set_field_part_data("Mass_so4" ,lchnk-begchunk+1,mass_so4(:ncol,:))
 #endif
 #endif
 
