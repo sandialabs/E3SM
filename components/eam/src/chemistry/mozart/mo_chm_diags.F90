@@ -757,7 +757,14 @@ contains
     end if
     endif
 #if defined(CLDERA_PROFILING)
-    call cldera_set_field_part_data("Mass_so4" ,lchnk-begchunk+1,mass_so4(:ncol,:))
+    if (nso4>1) then
+       do tag_loop = 1,nso4
+          if (tag_loop>3) exit ! Only three tags needed for now
+          call cldera_set_field_part_data("Mass_so4"//tagged_suffix(tag_loop),lchnk-begchunk+1,mass_so4(:ncol,:,tag_loop))
+       end do
+    else
+       call cldera_set_field_part_data("Mass_so4" ,lchnk-begchunk+1,mass_so4(:ncol,:,:))
+    end if
 #endif
 #endif
 
