@@ -811,10 +811,15 @@ subroutine phys_init( phys_state, phys_tend, pbuf2d, cam_out )
     teout_idx = pbuf_get_index( 'TEOUT')
 
     ! For adiabatic or ideal physics don't need to initialize any of the
-    ! parameterizations below. For ideal phys, init heating history field
+    ! parameterizations below. For ideal phys, init heating history field, 
+    ! and initialize tropopause location routines
     if (ideal_phys) then
         call addfld('HS_HEAT',  (/ 'lev' /), 'A', 'J/kg/s', 'heating rate by FIDEAL' )
         call add_default('HS_HEAT', 1, ' ')
+
+        call t_startf ('tropopause_init')
+        call tropopause_init()
+        call t_stopf ('tropopause_init')
     endif
     if (adiabatic .or. ideal_phys) return
 
@@ -1176,6 +1181,7 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
     use check_energy,     only: check_energy_fix, check_energy_chng
     use dycore,           only: dycore_is
     use cam_control_mod,  only: nsrest  ! restart flag
+    use tropopause,       only: tropopause_output
   
     ! adding to allow calling of custom tracer tendencies
     use check_energy,    only: check_tracers_chng, check_tracers_data
@@ -1272,6 +1278,13 @@ subroutine phys_run1_adiabatic_or_ideal(ztodt, phys_state, phys_tend,  pbuf2d)
 
        ! Dump dynamics variables to history buffers
        call diag_phys_writeout(phys_state(c))
+    
+       ! Diagnose the location of the tropopause and its location to the history file(s).
+       ! In non-idealized-physics runs, phys_run1() calls tphysbc(), where these lines are 
+       ! found. Because we never run tphysbc() for the present case, call this here.
+       call t_startf('tropopause')
+       call tropopause_output(phys_state(c))
+       call t_stopf('tropopause')
 
        ! Allow evolution of CLDERA dynamic, passive tracer tendencies if enabled
        call cldera_dynamic_tracers_timestep_tend(phys_state(c), ptend(c), ztodt, phys_state(c)%ncol)
