@@ -555,7 +555,7 @@ if ($phys eq 'ideal')     { add_default($nl, 'atm_ideal_phys', 'val'=>'.true.');
 
 # Ideal physics option
 # TODO: roll this into phys option so that ideal physics is identified not by phys="ideal", but
-# "held-suarez", "held-suarez-williamson", "held-suarez-lin-williamson", etc.
+# "held-suarez", "held-suarez-williamson-vanilla", "held-suarez-williamson", "held-suarez-lin-williamson", etc.
 if ($phys eq 'ideal') {
     add_default($nl, 'ideal_phys_option', 'val'=>'held-suarez');
 }

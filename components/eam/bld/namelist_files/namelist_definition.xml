@@ -3487,7 +3487,7 @@ Default: set by build-namelist
 </entry>
 
 <entry id="ideal_phys_option" type="char*128" group="phys_ctl_nl"
-       valid_values="held-suarez,held-suarez-williamson,held-suarez-lin-williamson">
+       valid_values="held-suarez,held-suarez-williamson-vanilla,held-suarez-williamson,held-suarez-lin-williamson">
 Type of idealized physics configuration to use if running cam_physpkg="ideal".
 Default: held-suarez
 </entry>

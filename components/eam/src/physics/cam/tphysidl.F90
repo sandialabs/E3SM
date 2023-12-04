@@ -371,6 +371,109 @@ subroutine tphysidl(ztodt, state, tend, ideal_phys_option)
          endif
       end do
 
+   elseif (trim(ideal_phys_option) == 'held-suarez-williamson-vanilla') then
+  !
+  !-----------------------------------------------------------------------
+  !
+  ! Modified Held/Suarez IDEALIZED physics algorithm
+  ! (modified with Williamson stratosphere):
+  !
+  !   Williamson, D. L., J. G. Olson and B. A. Boville, 1998: A comparison
+  !   of semi--Lagrangian and Eulerian tropical climate simulations.
+  !   Mon. Wea. Rev., vol 126, pp. 1001-1012.
+  !
+  !-----------------------------------------------------------------------
+  !
+  ! Compute idealized radiative heating rates (as dry static energy)
+  !
+      efoldf  =  1._r8
+      efolda  = 40._r8
+      efoldaa = 40._r8
+      efolds  =  4._r8
+      sigmab  =  0.7_r8
+      t00     = 200._r8
+!
+      onemsig = 1._r8 - sigmab
+!
+      ka  = 1._r8/(86400._r8*efolda)
+      kaa = 1._r8/(86400._r8*efoldaa)
+      ks  = 1._r8/(86400._r8*efolds)
+!
+      pi     = 4._r8*atan(1._r8)
+      phi0   = 60._r8*pi/180._r8
+      dphi0  = 15._r8*pi/180._r8
+      a0     = 2.65_r8/dphi0
+      aeq    = 10000._r8
+      apole  = 200._r8
+      lapsew = -3.345e-03_r8
+      constw = rair*lapsew/gravit
+      lapsec =  2.00e-03_r8
+      constc = rair*lapsec/gravit
+      do k=1,pver
+         if (pref_mid_norm(k) > sigmab) then
+            do i=1,ncol
+               kt = ka + (ks - ka)*cossqsq(i)*(pref_mid_norm(k) - sigmab)/onemsig
+               acoslat = abs(acos(coslat(i)))
+               p0strat = aeq - (aeq - apole)*0.5_r8*(1._r8 + tanh(a0*(acoslat - phi0)))
+               tmp     = kt/(1._r8+ ztodt*kt)
+               trefc   = 315._r8 - 60._r8*sinsq(i)
+               trefa   = (trefc - 10._r8*cossq(i)*log((pmid(i,k)/psurf_ref)))*(pmid(i,k)/psurf_ref)** &
+                                                                                     cappa
+               trefa   = max(t00,trefa)
+               if (pmid(i,k) < 10000._r8) then
+                  trefa = t00*((pmid(i,k)/10000._r8))**constc
+                  tmp   = kaa/(1._r8+ ztodt*kaa)
+               endif
+               if (pmid(i,k) < p0strat) then
+                  trefa = trefa + t00*( ((pmid(i,k)/p0strat))**constw - 1._r8 )
+                  tmp   = kaa/(1._r8+ ztodt*kaa)
+               endif
+               ptend%s(i,k) = (trefa - state%t(i,k))*tmp*cpair
+            end do
+         else
+            do i=1,ncol
+               acoslat = abs(acos(coslat(i)))
+               p0strat = aeq - (aeq - apole)*0.5_r8*(1._r8 + tanh(a0*(acoslat - phi0)))
+               tmp     = ka/(1._r8+ ztodt*ka)
+               trefc   = 315._r8 - 60._r8*sinsq(i)
+               trefa   = (trefc - 10._r8*cossq(i)*log((pmid(i,k)/psurf_ref)))*(pmid(i,k)/psurf_ref)** &
+                                                                                     cappa
+               trefa   = max(t00,trefa)
+               if (pmid(i,k) < 10000._r8) then
+                  trefa = t00*((pmid(i,k)/10000._r8))**constc
+                  tmp   = kaa/(1._r8+ ztodt*kaa)
+               endif
+               if (pmid(i,k) < p0strat) then
+                  trefa = trefa + t00*( ((pmid(i,k)/p0strat))**constw - 1._r8 )
+                  tmp   = kaa/(1._r8+ ztodt*kaa)
+               endif
+               ptend%s(i,k) = (trefa - state%t(i,k))*tmp*cpair
+            end do
+         endif
+      end do
+!
+! Add diffusion near the surface for the wind fields
+!
+      do k=1,pver
+         do i=1,pcols
+            ptend%u(i,k) = 0._r8
+            ptend%v(i,k) = 0._r8
+         end do
+      end do
+
+      kf = 1._r8/(86400._r8*efoldf)
+!
+      do k=1,pver
+         if (pref_mid_norm(k) > sigmab) then
+            kv  = kf*(pref_mid_norm(k) - sigmab)/onemsig
+            tmp = -kv/(1._r8+ ztodt*kv)
+            do i=1,ncol
+               ptend%u(i,k) = tmp*state%u(i,k)
+               ptend%v(i,k) = tmp*state%v(i,k)
+            end do
+         endif
+      end do
+
    elseif (trim(ideal_phys_option) == 'held-suarez-lin-williamson') then
 !
 !-----------------------------------------------------------------------
