@@ -33,6 +33,9 @@ contains
   !====================================================================================
 
   subroutine lnd_init_mct( EClock, cdata_l, x2l_l, l2x_l, NLFilename )
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_init, cldera_set_log_unit, cldera_set_masterproc
+#endif
     !
     ! !DESCRIPTION:
     ! Initialize land surface model and obtain relevant atmospheric model arrays
@@ -230,6 +233,15 @@ contains
     else
        call endrun( sub//' ERROR: unknown starttype' )
     end if
+
+#if false && defined(CLDERA_PROFILING)
+    ! Initialize CLDERA profiling before elm_init, but after time init
+    call t_startf('cldera_init')
+    call cldera_init(mpicom_lnd,start_ymd,start_tod,curr_ymd,curr_tod,stop_ymd,stop_tod)
+    call cldera_set_log_unit (iulog)
+    call cldera_set_masterproc (masterproc)
+    call t_stopf('cldera_init')
+#endif
 
     call elm_varctl_set(caseid_in=caseid, ctitle_in=ctitle,                     &
                         brnch_retain_casename_in=brnch_retain_casename,         &
