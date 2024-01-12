@@ -566,6 +566,10 @@ contains
   !====================================================================================
 
   subroutine lnd_final_mct( EClock, cdata_l, x2l_l, l2x_l)
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_clean_up
+#endif
+
     !
     ! !DESCRIPTION:
     ! Finalize land surface model
@@ -587,6 +591,11 @@ contains
     ! fill this in
     call final()
 
+#if false && defined(CLDERA_PROFILING)
+    call t_startf('cldera_clean_up')
+    call cldera_clean_up ()
+    call t_stopf('cldera_clean_up')
+#endif
   end subroutine lnd_final_mct
 
   !====================================================================================
