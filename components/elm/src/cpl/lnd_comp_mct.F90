@@ -234,10 +234,10 @@ contains
        call endrun( sub//' ERROR: unknown starttype' )
     end if
 
-#if false && defined(CLDERA_PROFILING)
+#if defined(CLDERA_PROFILING)
     ! Initialize CLDERA profiling before elm_init, but after time init
     call t_startf('cldera_init')
-    call cldera_init(mpicom_lnd,start_ymd,start_tod,curr_ymd,curr_tod,stop_ymd,stop_tod)
+    call cldera_init("elm",mpicom_lnd,start_ymd,start_tod,curr_ymd,curr_tod,stop_ymd,stop_tod)
     call cldera_set_log_unit (iulog)
     call cldera_set_masterproc (masterproc)
     call t_stopf('cldera_init')
@@ -472,6 +472,10 @@ contains
     call seq_infodata_GetData( infodata, orb_eccen=eccen, orb_mvelpp=mvelpp, &
          orb_lambm0=lambm0, orb_obliqr=obliqr )
 
+#if defined(CLDERA_PROFILING)
+    call cldera_switch_context("elm")
+#endif
+
     ! Loop over time steps in coupling interval
 
     dosend = .false.
@@ -591,8 +595,9 @@ contains
     ! fill this in
     call final()
 
-#if false && defined(CLDERA_PROFILING)
+#if defined(CLDERA_PROFILING)
     call t_startf('cldera_clean_up')
+    call cldera_switch_context("elm")
     call cldera_clean_up ()
     call t_stopf('cldera_clean_up')
 #endif
