@@ -237,7 +237,8 @@ contains
 #if defined(CLDERA_PROFILING)
     ! Initialize CLDERA profiling before elm_init, but after time init
     call t_startf('cldera_init')
-    call cldera_init("elm",mpicom_lnd,start_ymd,start_tod,curr_ymd,curr_tod,stop_ymd,stop_tod)
+    ! GH TODO: using ref_ymd and ref_tod here... is that right?
+    call cldera_init("elm",mpicom_lnd,start_ymd,start_tod,ref_ymd,ref_tod,stop_ymd,stop_tod)
     call cldera_set_log_unit (iulog)
     call cldera_set_masterproc (masterproc)
     call t_stopf('cldera_init')
@@ -348,6 +349,9 @@ contains
   !====================================================================================
 
   subroutine lnd_run_mct(EClock, cdata_l, x2l_l, l2x_l)
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod , only: cldera_switch_context
+#endif
     !
     ! !DESCRIPTION:
     ! Run elm model
@@ -571,7 +575,8 @@ contains
 
   subroutine lnd_final_mct( EClock, cdata_l, x2l_l, l2x_l)
 #if defined(CLDERA_PROFILING)
-    use cldera_interface_mod, only: cldera_clean_up
+    use cldera_interface_mod, only: cldera_clean_up, cldera_switch_context
+    use perf_mod            , only: t_startf, t_stopf
 #endif
 
     !

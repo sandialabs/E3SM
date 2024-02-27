@@ -36,7 +36,7 @@ module histFileMod
 #if defined(CLDERA_PROFILING)
   use clm_time_manager     , only : get_curr_date
   use perf_mod             , only : t_startf, t_stopf
-  use cldera_interface_mod , only : cldera_compute_stats
+  use cldera_interface_mod , only : cldera_compute_stats, cldera_switch_context
 #endif
 
   !
@@ -2883,6 +2883,7 @@ contains
           call get_curr_date( yr, mon, day, tod )
           ymd = yr*10000 + mon*100 + day
           call t_startf('cldera_elm_compute_stats')
+          call cldera_switch_context("elm")
           call cldera_compute_stats(ymd,tod)
           call t_stopf('cldera_elm_compute_stats')
 #endif
