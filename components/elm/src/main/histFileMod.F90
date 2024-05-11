@@ -2879,15 +2879,6 @@ contains
 
        else if (mode == 'write') then
 
-#if false && defined(CLDERA_PROFILING)
-          call get_curr_date( yr, mon, day, tod )
-          ymd = yr*10000 + mon*100 + day
-          call t_startf('cldera_elm_compute_stats')
-          call cldera_switch_context("elm")
-          call cldera_compute_stats(ymd,tod)
-          call t_stopf('cldera_elm_compute_stats')
-#endif
-
           ! Determine output buffer
 
           histo => tape(t)%hlist(f)%hbuf

@@ -175,6 +175,24 @@ module elm_driver
   use elm_varctl                  , only : budget_ann, budget_ltann, budget_ltend
 
   use timeinfoMod
+#if defined(CLDERA_PROFILING)
+   use iso_c_binding, only: c_loc
+   use cldera_interface_mod, only: cldera_init, cldera_set_log_unit, &
+                                   cldera_set_masterproc, max_str_len, &
+                                   cldera_add_partitioned_field, &
+                                   cldera_set_field_part_extent, &
+                                   cldera_set_field_part_data, &
+                                   cldera_commit_all_fields,   &
+                                   cldera_commit_field, cldera_switch_context, &
+                                   cldera_compute_stats
+!    use physics_buffer,   only: physics_buffer_desc, col_type_grid, pbuf_get_index, &
+!                                pbuf_get_field_rank, pbuf_get_field_dims, pbuf_get_field, &
+!                                pbuf_get_field_name, pbuf_has_field, pbuf_get_field_persistence, &
+!                                persistence_global
+!    use ppgrid,           only: begchunk, endchunk, pcols, pver
+!    use phys_grid,        only: get_ncols_p, get_gcol_all_p, get_area_all_p
+!    use constituents,     only: pcnst, cnst_name
+#endif
   !
   ! !PUBLIC TYPES:
   implicit none
@@ -199,6 +217,13 @@ contains
     ! the calling tree is given in the description of this module.
     !
     ! !USES:
+#if defined(CLDERA_PROFILING)
+    use SurfaceRadiationMod, only: surfrad_type
+    use SolarAbsorbedType ,  only : solarabs_type
+    use VegetationDataType,  only: vegetation_energy_state, vegetation_water_flux
+    use PhotosynthesisType,  only: photosyns_type
+    use CanopyStateType,     only: CanopyState_type
+#endif
     !
     ! !ARGUMENTS:
     implicit none
@@ -231,6 +256,14 @@ contains
     character(len=256)   :: dateTimeString
     type(bounds_type)    :: bounds_clump
     type(bounds_type)    :: bounds_proc
+#if defined(CLDERA_PROFILING)
+    integer :: ncols, part_dim, nparts, part_alloc_size
+    integer :: dims(3)
+    integer :: begp, endp
+    character(len=4) :: dimnames(3)
+    real(r8), pointer :: field1d(:)
+    integer :: ymd
+#endif
     !-----------------------------------------------------------------------
 
     call get_curr_time_string(dateTimeString)
@@ -707,6 +740,21 @@ contains
             solarabs_vars, surfalb_vars, energyflux_vars)
 
        call t_stopf('surfrad')
+
+#if defined(CLDERA_PROFILING)
+    call cldera_switch_context("elm")
+    ! All fields are partitioned over cols index, which is the first
+    part_dim = 1
+
+    ! GH: TODO hardcode 2 procs (wrong)
+    nparts = 1
+
+    ncols = endp - begp + 1
+    dimnames(1) = "ncol"
+    dims(1) = ncols
+    part_alloc_size = -1 ! pcols
+
+#endif
 
        ! ============================================================================
        ! Determine leaf temperature and surface fluxes based on ground
@@ -1429,6 +1477,14 @@ contains
     call t_startf('hbuf')
     call hist_update_hbuf(bounds_proc)
     call t_stopf('hbuf')
+
+#if defined(CLDERA_PROFILING)
+    ymd = year_curr*10000 + mon_curr*100 + day_curr
+    call t_startf('cldera_elm_compute_stats')
+    call cldera_switch_context("elm")
+    call cldera_compute_stats(ymd,secs_curr)
+    call t_stopf('cldera_elm_compute_stats')
+#endif
 
     ! ============================================================================
     ! Compute water budget
