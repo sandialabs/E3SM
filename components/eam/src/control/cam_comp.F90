@@ -150,7 +150,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
    real(r8), pointer :: field1d(:), field2d(:,:), field3d(:,:,:)
    type(physics_buffer_desc), pointer :: field_desc
    character(len=5) :: int_str
-   character(len=4) :: diag(0:2) = (/'    ','_d1 ','_d2 '/)
+   character(len=4) :: diag(0:3) = (/'    ','_d1 ','_d2 ','_d3 '/)
    character(len=2) :: tagged_suffix(3) = (/'01', '02', '03'/)
 #endif
    !-----------------------------------------------------------------------
@@ -349,7 +349,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
    call cldera_add_partitioned_field("aod_so2", 1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
    call cldera_add_partitioned_field("aod_ash", 1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
    call cldera_add_partitioned_field("aod_sulf",1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
-   do icall = 2,0,-1 ! profile climate calculation & two diags for now
+   do icall = 3,0,-1 ! profile climate calculation & three diags for now
       call cldera_add_partitioned_field("SOLIN"//diag(icall), 1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
       call cldera_add_partitioned_field("FSDS"//diag(icall), 1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
       call cldera_add_partitioned_field("FSNIRTOA"//diag(icall), 1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
@@ -406,7 +406,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
    call cldera_add_partitioned_field("zm",2,dims,dimnames,nparts,part_dim,part_alloc_size)
 
    ! 2d, mid points (copy)
-   do icall = 2,0,-1 ! profile climate calculation & two diags for now
+   do icall = 3,0,-1 ! profile climate calculation & three diags for now
       call cldera_add_partitioned_field('QRS'//diag(icall), 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
       call cldera_add_partitioned_field('QRSC'//diag(icall), 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
       call cldera_add_partitioned_field("QRL"//diag(icall), 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
@@ -556,7 +556,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
      call cldera_set_field_part_extent("aod_so2", ipart,ncols)
      call cldera_set_field_part_extent("aod_ash", ipart,ncols)
      call cldera_set_field_part_extent("aod_sulf",ipart,ncols)
-     do icall = 2,0,-1 ! profile climate calculation & two diags for now
+     do icall = 3,0,-1 ! profile climate calculation & three diags for now
        call cldera_set_field_part_extent("SOLIN"//diag(icall), ipart,ncols)
        call cldera_set_field_part_extent("FSDS"//diag(icall), ipart,ncols)
        call cldera_set_field_part_extent("FSNIRTOA"//diag(icall), ipart,ncols)

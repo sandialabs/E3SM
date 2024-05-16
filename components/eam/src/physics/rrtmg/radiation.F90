@@ -1408,7 +1408,7 @@ end function radiation_nextsw_cday
                   call outfld('SWCF'//diag(icall),swcf  ,pcols,lchnk)
 
 #if defined(CLDERA_PROFILING)
-                  if (icall < 3) then ! profile climate calculation & two diags for now
+                  if (icall < 4) then ! profile climate calculation & three diags for now
                      call cldera_set_field_part_data('QRS'//diag(icall),lchnk-begchunk+1,qrs(:ncol,:pver)/cpair)
                      call cldera_set_field_part_data('QRSC'//diag(icall),lchnk-begchunk+1,qrsc(:ncol,:pver)/cpair)
                      call cldera_set_field_part_data('SOLIN'//diag(icall),lchnk-begchunk+1,solin)
@@ -1534,7 +1534,7 @@ end function radiation_nextsw_cday
                   call outfld('FLDS'//diag(icall),cam_out%flwds ,pcols,lchnk)
 
 #if defined(CLDERA_PROFILING)
-                  if (icall < 3) then ! profile climate calculation & two diags for now
+                  if (icall < 4) then ! profile climate calculation & three diags for now
                      call cldera_set_field_part_data('QRL'//diag(icall),lchnk-begchunk+1,qrl(:ncol,:)/cpair)
                      call cldera_set_field_part_data('QRLC'//diag(icall),lchnk-begchunk+1,qrlc(:ncol,:)/cpair)
                      call cldera_set_field_part_data('FLNT'//diag(icall),lchnk-begchunk+1,flnt)
