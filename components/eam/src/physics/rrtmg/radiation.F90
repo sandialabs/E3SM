@@ -1468,6 +1468,11 @@ end function radiation_nextsw_cday
              call outfld('SNOW_ICLD_VISTAU', snow_icld_vistau, pcols, lchnk)
           endif
 
+#if defined(CLDERA_PROFILING)
+          call cldera_set_field_part_data('TOT_CLD_VISTAU',lchnk-begchunk+1,tot_cld_vistau)
+          call cldera_set_field_part_data('TOT_ICLD_VISTAU',lchnk-begchunk+1,tot_icld_vistau)
+#endif
+
           call t_stopf ('rad_sw')
        end if   ! dosw
 

@@ -407,10 +407,6 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
    call cldera_add_partitioned_field("pdel_dry",2,dims,dimnames,nparts,part_dim,part_alloc_size)
    call cldera_add_partitioned_field("exner",2,dims,dimnames,nparts,part_dim,part_alloc_size)
    call cldera_add_partitioned_field("zm",2,dims,dimnames,nparts,part_dim,part_alloc_size)
-   call cldera_add_partitioned_field("NIHF", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
-   call cldera_add_partitioned_field("NIIMM", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
-   call cldera_add_partitioned_field("NIDEP", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
-   call cldera_add_partitioned_field("NIMEY", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
 
    ! 2d, mid points (copy)
    do icall = 3,0,-1 ! profile climate calculation & three diags for now
@@ -419,6 +415,10 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
       call cldera_add_partitioned_field("QRL"//diag(icall), 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
       call cldera_add_partitioned_field("QRLC"//diag(icall), 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
    end do
+   call cldera_add_partitioned_field("NIHF", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
+   call cldera_add_partitioned_field("NIIMM", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
+   call cldera_add_partitioned_field("NIDEP", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
+   call cldera_add_partitioned_field("NIMEY", 2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
    call cldera_add_partitioned_field("Mass_so4",2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
    do tag_loop = 1,3 ! only three tags needed for now
       call cldera_add_partitioned_field("Mass_so4"//tagged_suffix(tag_loop),2,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
@@ -604,13 +604,13 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
      call cldera_set_field_part_extent("CLDTOT_ISCCP", ipart,ncols)
      call cldera_set_field_part_extent("TOT_CLD_VISTAU", ipart,ncols)
      call cldera_set_field_part_extent("TOT_ICLD_VISTAU", ipart,ncols)
-     call cldera_set_field_part_extent("AODSO4", ipart,ncols)
-     call cldera_set_field_part_extent("BURDENSO4", ipart,ncols)
-     call cldera_set_field_part_extent("Mass_so4", ipart,ncols)
      call cldera_set_field_part_extent("NIHF", ipart,ncols)
      call cldera_set_field_part_extent("NIIMM", ipart,ncols)
      call cldera_set_field_part_extent("NIDEP", ipart,ncols)
      call cldera_set_field_part_extent("NIMEY", ipart,ncols)
+     call cldera_set_field_part_extent("AODSO4", ipart,ncols)
+     call cldera_set_field_part_extent("BURDENSO4", ipart,ncols)
+     call cldera_set_field_part_extent("Mass_so4", ipart,ncols)
      do tag_loop = 1,3 ! only three tags needed for now
        call cldera_set_field_part_extent("AODSO4"//tagged_suffix(tag_loop), ipart,ncols)
        call cldera_set_field_part_extent("BURDENSO4"//tagged_suffix(tag_loop), ipart,ncols)
