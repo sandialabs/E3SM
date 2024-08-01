@@ -425,7 +425,7 @@ contains
 
     ! Add subgrid to column mapping data (performed on local ids, "lids")
     intfield1d => veg_pp%gridcell
-    call cldera_add_partitioned_field("col_lids",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_add_partitioned_field("col_lids",1,dims,dimnames,nparts,part_dim,part_alloc_size,.true.,"int")
     call cldera_set_field_part_extent("col_lids",1,ncols)
     call cldera_set_field_part_data("col_lids",1,intfield1d)
     call cldera_commit_field("col_lids")
