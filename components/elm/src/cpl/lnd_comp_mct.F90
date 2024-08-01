@@ -385,7 +385,8 @@ contains
     do g = 1,ncols
       ! multiply area by land fraction; otherwise data will be biased toward coastal land
       cols_area(g) = ldomain%area(g) * ldomain%frac(g)
-      col_gids(g) = 1
+      ! initialize column weights
+      cols_gids(g) = 1
       subgrid_wts_sum(g) = 0
     enddo
     
