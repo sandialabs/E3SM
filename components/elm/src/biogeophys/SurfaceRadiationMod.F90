@@ -95,16 +95,6 @@ contains
   subroutine InitAllocate(this, bounds)
     !
     ! !USES:
-#if defined(CLDERA_PROFILING)
-    use iso_c_binding, only: c_loc
-!    use cldera_interface_mod, only: cldera_init, cldera_set_log_unit, &
-!                                    cldera_set_masterproc, max_str_len, &
-!                                    cldera_add_partitioned_field, &
-!                                    cldera_set_field_part_extent, &
-!                                    cldera_set_field_part_data, &
-!                                    cldera_commit_all_fields,   &
-!                                    cldera_commit_field
-#endif
     !use shr_infnan_mod, only : nan => shr_infnan_nan, assignment(=)
     !
     ! !ARGUMENTS:
