@@ -890,7 +890,7 @@ end function radiation_nextsw_cday
     use output_aerocom_aie , only: do_aerocom_ind3
 #if defined(CLDERA_PROFILING)
     use ppgrid,         only: begchunk
-    use cldera_interface_mod, only: cldera_set_field_part_data, cldera_switch_context
+    use cldera_interface_mod, only: cldera_set_field_part_data
 #endif
 
     ! Arguments
@@ -1408,7 +1408,6 @@ end function radiation_nextsw_cday
                   call outfld('SWCF'//diag(icall),swcf  ,pcols,lchnk)
 
 #if defined(CLDERA_PROFILING)
-                  call cldera_switch_context("eam")
                   if (icall < 4) then ! profile climate calculation & three diags for now
                      call cldera_set_field_part_data('QRS'//diag(icall),lchnk-begchunk+1,qrs(:ncol,:pver)/cpair)
                      call cldera_set_field_part_data('QRSC'//diag(icall),lchnk-begchunk+1,qrsc(:ncol,:pver)/cpair)
