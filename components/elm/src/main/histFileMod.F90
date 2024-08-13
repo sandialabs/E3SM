@@ -33,11 +33,6 @@ module histFileMod
   use PRTGenericMod          , only : nelements_fates  => num_elements
   use TopounitType      , only : top_pp
   use topounit_varcon   , only: max_topounits, has_topounit
-#if defined(CLDERA_PROFILING)
-  use clm_time_manager     , only : get_curr_date
-  use perf_mod             , only : t_startf, t_stopf
-  use cldera_interface_mod , only : cldera_compute_stats, cldera_switch_context
-#endif
 
   !
   implicit none
@@ -2791,9 +2786,6 @@ contains
     real(r8), pointer :: hist1do(:)      ! temporary
     character(len=*),parameter :: subname = 'hfields_write'
 !-----------------------------------------------------------------------
-#if defined(CLDERA_PROFILING)
-    integer :: ymd, yr, mon, day, tod
-#endif
 
     ! Write/define 1d topological info
 
