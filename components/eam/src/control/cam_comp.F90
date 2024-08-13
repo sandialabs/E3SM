@@ -103,7 +103,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
                                    cldera_set_field_part_extent, &
                                    cldera_set_field_part_data, &
                                    cldera_commit_all_fields,   &
-                                   cldera_commit_field
+                                   cldera_commit_field, cldera_switch_context
    use physics_buffer,   only: physics_buffer_desc, col_type_grid, pbuf_get_index, &
                                pbuf_get_field_rank, pbuf_get_field_dims, pbuf_get_field, &
                                pbuf_get_field_name, pbuf_has_field, pbuf_get_field_persistence, &
@@ -230,6 +230,7 @@ subroutine cam_init( cam_out, cam_in, mpicom_atm, &
 
 #if defined(CLDERA_PROFILING)
    call t_startf('cldera_add_fields')
+   call cldera_switch_context("eam")
    nparts = endchunk - begchunk + 1
 
    ! All fields are partitioned over cols index, which is the first

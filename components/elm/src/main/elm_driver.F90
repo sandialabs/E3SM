@@ -199,6 +199,9 @@ contains
     ! the calling tree is given in the description of this module.
     !
     ! !USES:
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_switch_context, cldera_compute_stats
+#endif
     !
     ! !ARGUMENTS:
     implicit none
@@ -231,6 +234,9 @@ contains
     character(len=256)   :: dateTimeString
     type(bounds_type)    :: bounds_clump
     type(bounds_type)    :: bounds_proc
+#if defined(CLDERA_PROFILING)
+    integer :: ymd
+#endif
     !-----------------------------------------------------------------------
 
     call get_curr_time_string(dateTimeString)
@@ -1429,6 +1435,14 @@ contains
     call t_startf('hbuf')
     call hist_update_hbuf(bounds_proc)
     call t_stopf('hbuf')
+
+#if defined(CLDERA_PROFILING)
+    ymd = year_curr*10000 + mon_curr*100 + day_curr
+    call t_startf('cldera_elm_compute_stats')
+    call cldera_switch_context("elm")
+    call cldera_compute_stats(ymd,secs_curr)
+    call t_stopf('cldera_elm_compute_stats')
+#endif
 
     ! ============================================================================
     ! Compute water budget

@@ -105,7 +105,7 @@ CONTAINS
 
   subroutine atm_init_mct( EClock, cdata_a, x2a_a, a2x_a, NLFilename )
 #if defined(CLDERA_PROFILING)
-    use cldera_interface_mod, only: cldera_init, cldera_set_log_unit, cldera_set_masterproc
+    use cldera_interface_mod, only: cldera_init, cldera_set_log_unit, cldera_set_masterproc, cldera_switch_context
 #endif
 
     !-----------------------------------------------------------------------
@@ -404,6 +404,10 @@ CONTAINS
        ! only for the purposes of finishing the flux averaged calculation to compute a2x_a
        ! Note - cam_run1 is called on restart only to have cam internal state consistent with the 
        ! a2x_a state sent to the coupler
+
+#if defined(CLDERA_PROFILING)
+       call cldera_switch_context("eam")
+#endif
 
        !Obtain the precipitation downscaling method from the land model
        call seq_infodata_GetData( infodata,                                           &

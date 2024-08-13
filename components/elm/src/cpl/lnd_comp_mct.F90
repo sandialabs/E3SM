@@ -33,6 +33,24 @@ contains
   !====================================================================================
 
   subroutine lnd_init_mct( EClock, cdata_l, x2l_l, l2x_l, NLFilename )
+#if defined(CLDERA_PROFILING)
+   use iso_c_binding, only: c_loc
+   use cldera_interface_mod, only: cldera_init, cldera_set_log_unit, &
+                                   cldera_set_masterproc, max_str_len, &
+                                   cldera_add_partitioned_field, &
+                                   cldera_set_field_part_extent, &
+                                   cldera_set_field_part_data, &
+                                   cldera_commit_all_fields,   &
+                                   cldera_commit_field, cldera_switch_context
+    use elm_varpar      , only : nlevgrnd
+    use elm_instMod     , only : solarabs_vars, surfrad_vars, &
+                                 veg_es, veg_wf, &
+                                 canopystate_vars, photosyns_vars
+    use GridcellType   , only : grc_pp
+    use ColumnType     , only : col_pp
+    use ColumnDataType , only : col_ws
+    use VegetationType , only : veg_pp
+#endif
     !
     ! !DESCRIPTION:
     ! Initialize land surface model and obtain relevant atmospheric model arrays
@@ -113,6 +131,28 @@ contains
     integer :: lbnum                                 ! input to memory diagnostic
     integer :: shrlogunit,shrloglev                  ! old values for log unit and log level
     integer :: nstep
+#if defined(CLDERA_PROFILING)
+    character(len=max_str_len) :: fname
+    integer :: p, c, nfields, idx, rank, icmp, nparts, part_dim, ipart, fsize, ncols, icall, tag_loop
+    integer :: nlcols,irank,part_alloc_size
+    integer :: dims(3)
+    character(len=max_str_len) :: dimnames(3)
+    ! arrays for copied data
+    integer, allocatable :: cols_gids(:)
+    real(r8), allocatable :: cols_area(:)
+    real(r8), allocatable :: subgrid_lat(:)
+    real(r8), allocatable :: subgrid_lon(:)
+    real(r8), allocatable :: subgrid_wts_sum(:)
+    ! pointers for data arrays
+    real(r8), pointer :: field1d(:), field2d(:,:), field3d(:,:,:)
+    integer, pointer :: intfield1d(:)
+    character(len=5) :: int_str
+    ! bounds for different data types
+    integer :: begp, endp
+    integer :: begc, endc
+    integer :: begl, endl
+    integer :: begg, endg
+#endif
     type(bounds_type) :: bounds                      ! bounds
     character(len=32), parameter :: sub = 'lnd_init_mct'
     character(len=*),  parameter :: format = "('("//trim(sub)//") :',A)"
@@ -231,6 +271,15 @@ contains
        call endrun( sub//' ERROR: unknown starttype' )
     end if
 
+#if defined(CLDERA_PROFILING)
+    ! Initialize CLDERA profiling before elm_init, but after time init
+    call t_startf('cldera_init')
+    call cldera_init("elm",mpicom_lnd,start_ymd,start_tod,ref_ymd,ref_tod,stop_ymd,stop_tod)
+    call cldera_set_log_unit (iulog)
+    call cldera_set_masterproc (masterproc)
+    call t_stopf('cldera_init')
+#endif
+
     call elm_varctl_set(caseid_in=caseid, ctitle_in=ctitle,                     &
                         brnch_retain_casename_in=brnch_retain_casename,         &
                         single_column_in=single_column, scmlat_in=scmlat,       &
@@ -277,6 +326,237 @@ contains
 
     call initialize2()
     call initialize3()
+
+#if defined(CLDERA_PROFILING)
+    ! this region needs to be after initialize3, which sets elm_varpar%nlevgrnd, needed for H2OSOI
+    call t_startf('cldera_add_fields')
+    call cldera_switch_context("elm")
+    begp = bounds%begp; endp = bounds%endp ! these are the bounds for data defined on subgrid cells
+    begc = bounds%begc; endc = bounds%endc ! likely unused
+    begl = bounds%begl; endl = bounds%endl ! likely unused
+    begg = bounds%begg; endg = bounds%endg ! local bounds for columns
+    
+    ! All fields are partitioned over cols index, which is the first
+    part_dim = 1
+    nparts = 1
+
+    !
+    ! Start with data on the coarse grid (begg:endg) for lat/lon/gid/area
+    !
+    ncols = endg - begg + 1
+    dimnames(1) = "ncol"
+    dims(1) = ncols
+    part_alloc_size = -1 ! let cldera_tools automatically size arrays
+
+    if (masterproc) then
+       write(int_str,'(I5)'), ncols
+       write(iulog,*)'GH LND_INIT_MCT with '//int_str//' columns'
+       write(iulog,*)'[cldera profiling] Start adding ELM fields'
+       call shr_sys_flush(iulog)
+    endif
+   
+    ! 1d latitude
+    field1d => grc_pp%latdeg
+    call cldera_add_partitioned_field("lat",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("lat",1,ncols)
+    call cldera_set_field_part_data("lat",1,field1d)
+    call cldera_commit_field("lat")
+
+    ! 1d longitude
+    field1d => grc_pp%londeg
+    call cldera_add_partitioned_field("lon",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("lon",1,ncols)
+    call cldera_set_field_part_data("lon",1,field1d)
+    call cldera_commit_field("lon")
+
+    ! Add GIDs and areas
+    allocate(cols_gids(ncols))
+    allocate(cols_area(ncols))
+    allocate(subgrid_wts_sum(ncols))
+
+    ! NOTE: .false. is to declare the field as a copy of input data, rather than a view
+    call cldera_add_partitioned_field("col_gids",1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.,"int")
+    call cldera_add_partitioned_field("col_area",1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
+    call cldera_set_field_part_extent("col_gids",1,ncols)
+    call cldera_set_field_part_extent("col_area",1,ncols)
+    call cldera_commit_field("col_gids")
+    call cldera_commit_field("col_area")
+
+    do g = 1,ncols
+      ! multiply area by land fraction; otherwise data will be biased toward coastal land
+      cols_area(g) = ldomain%area(g) * ldomain%frac(g)
+      ! initialize column weights
+      cols_gids(g) = 1
+      subgrid_wts_sum(g) = 0
+    enddo
+    
+    call cldera_set_field_part_data("col_gids",1,cols_gids)
+    call cldera_set_field_part_data("col_area",1,cols_area)
+
+    !
+    ! Now work on data defined on the subgrid
+    !
+    ncols = endp - begp + 1
+    dims(1) = ncols
+
+    ! Add lat/lon data for subgrid cells (this is the lat/lon of the corresponding coarse cell)
+    ! lat
+    allocate(subgrid_lat(ncols))
+    field1d => grc_pp%latdeg
+    do p = 1,ncols
+      g = veg_pp%gridcell(p)
+      subgrid_lat(p) = field1d(g)
+    enddo
+    call cldera_add_partitioned_field("subgrid_lat",1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
+    call cldera_set_field_part_extent("subgrid_lat",1,ncols)
+    call cldera_commit_field("subgrid_lat")
+    call cldera_set_field_part_data("subgrid_lat",1,subgrid_lat)
+    ! lon
+    allocate(subgrid_lon(ncols))
+    field1d => grc_pp%londeg
+    do p = 1,ncols
+      g = veg_pp%gridcell(p)
+      subgrid_lon(p) = field1d(g)
+    enddo
+    call cldera_add_partitioned_field("subgrid_lon",1,dims,dimnames,nparts,part_dim,part_alloc_size,.false.)
+    call cldera_set_field_part_extent("subgrid_lon",1,ncols)
+    call cldera_commit_field("subgrid_lon")
+    call cldera_set_field_part_data("subgrid_lon",1,subgrid_lon)
+
+    ! Add subgrid to column mapping data (performed on local ids, "lids")
+    intfield1d => veg_pp%gridcell
+    call cldera_add_partitioned_field("col_lids",1,dims,dimnames,nparts,part_dim,part_alloc_size,.true.,"int")
+    call cldera_set_field_part_extent("col_lids",1,ncols)
+    call cldera_set_field_part_data("col_lids",1,intfield1d)
+    call cldera_commit_field("col_lids")
+
+    ! Add subgrid weights relative to the individual column
+    field1d => veg_pp%wtcol
+    call cldera_add_partitioned_field("subgrid_wts",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("subgrid_wts",1,ncols)
+    call cldera_set_field_part_data("subgrid_wts",1,field1d)
+    call cldera_commit_field("subgrid_wts")
+    
+    ! Validate subgrid weights
+    do p = 1,ncols
+      g = veg_pp%gridcell(p)
+      subgrid_wts_sum(g) = subgrid_wts_sum(g) + field1d(p)
+    enddo
+
+    !
+    ! Add miscellaneous column metadata fields that may be important
+    !
+
+    ! logical: whether a column is active, meaning ELM performs calculations on the column
+    ! field1d => col_pp%active
+    ! call cldera_add_partitioned_field("active",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    ! call cldera_set_field_part_extent("active",1,ncols)
+    ! call cldera_set_field_part_data("active",1,field1d)
+    ! call cldera_commit_field("active")
+
+    !
+    ! Add data for QOIs
+    !
+
+    ! Add SolarRadiation variables
+    field1d => surfrad_vars%fsds_vis_d_patch
+    call cldera_add_partitioned_field("FSDSVD",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("FSDSVD",1,ncols)
+    call cldera_set_field_part_data("FSDSVD",1,field1d)
+    call cldera_commit_field("FSDSVD")
+
+    field1d => surfrad_vars%fsds_vis_i_patch
+    call cldera_add_partitioned_field("FSDSVI",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("FSDSVI",1,ncols)
+    call cldera_set_field_part_data("FSDSVI",1,field1d)
+    call cldera_commit_field("FSDSVI")
+
+    ! Add SolarAbsorbedType variables
+    field1d => solarabs_vars%fsds_nir_d_patch
+    call cldera_add_partitioned_field("FSDSND",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("FSDSND",1,ncols)
+    call cldera_set_field_part_data("FSDSND",1,field1d)
+    call cldera_commit_field("FSDSND")
+
+    field1d => solarabs_vars%fsds_nir_i_patch
+    call cldera_add_partitioned_field("FSDSNI",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("FSDSNI",1,ncols)
+    call cldera_set_field_part_data("FSDSNI",1,field1d)
+    call cldera_commit_field("FSDSNI")
+
+    ! Add VegetationDataType variables
+    field1d => veg_es%t_veg
+    call cldera_add_partitioned_field("TV",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("TV",1,ncols)
+    call cldera_set_field_part_data("TV",1,field1d)
+    call cldera_commit_field("TV")
+
+    field1d => veg_wf%qflx_tran_veg
+    call cldera_add_partitioned_field("QVEGT",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("QVEGT",1,ncols)
+    call cldera_set_field_part_data("QVEGT",1,field1d)
+    call cldera_commit_field("QVEGT")
+
+    ! Add CanopyStateType variables
+    field1d => canopystate_vars%tlai_hist_patch
+    call cldera_add_partitioned_field("TLAI",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("TLAI",1,ncols)
+    call cldera_set_field_part_data("TLAI",1,field1d)
+    call cldera_commit_field("TLAI")
+
+    ! Add PhotosynthesisType variables
+    field1d => photosyns_vars%fpsn_patch
+    call cldera_add_partitioned_field("FPSN",1,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("FPSN",1,ncols)
+    call cldera_set_field_part_data("FPSN",1,field1d)
+    call cldera_commit_field("FPSN")
+
+    !
+    ! 2d fields
+    !
+    dims(2) = nlevgrnd
+    dimnames(2) = 'dz'
+    field2d => col_pp%dz
+    call cldera_add_partitioned_field("dz",2,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("dz",1,ncols)
+    call cldera_set_field_part_data("dz",1,field2d)
+    call cldera_commit_field("dz")
+
+    field2d => col_ws%h2osoi_vol
+    call cldera_add_partitioned_field("H2OSOI",2,dims,dimnames,nparts,part_dim,part_alloc_size)
+    call cldera_set_field_part_extent("H2OSOI",1,ncols)
+    call cldera_set_field_part_data("H2OSOI",1,field2d)
+    call cldera_commit_field("H2OSOI")
+
+    if (masterproc) then
+      write(iulog,*)'[cldera profiling] Finished adding ELM fields'
+    endif
+
+    if (masterproc) then
+      write(iulog, *) 'begp', begp
+      write(iulog, *) 'endp', endp
+      write(iulog, *) 'begc', begc
+      write(iulog, *) 'endc', endc
+      write(iulog, *) 'begl', begl
+      write(iulog, *) 'endl', endl
+      write(iulog, *) 'begg', begg
+      write(iulog, *) 'endg', endg
+
+      field1d => grc_pp%latdeg
+      write(iulog, *) 'lat', field1d(:)
+      field1d => grc_pp%londeg
+      write(iulog, *) 'lon', field1d(:)
+      write(iulog, *) 'cols_area', cols_area(:)
+      write(iulog, *) 'cols_gids', cols_gids(:)
+      write(iulog, *) 'subgrid_lat', subgrid_lat(:)
+      write(iulog, *) 'subgrid_lon', subgrid_lon(:)
+      write(iulog, *) 'subgrid_wts_sum', subgrid_wts_sum(:)
+      call shr_sys_flush(iulog)
+    end if
+
+    call cldera_commit_all_fields()
+    call t_stopf('cldera_add_fields')
+#endif
 
     ! Check that elm internal dtime aligns with elm coupling interval
 
@@ -336,6 +616,9 @@ contains
   !====================================================================================
 
   subroutine lnd_run_mct(EClock, cdata_l, x2l_l, l2x_l)
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod , only: cldera_switch_context
+#endif
     !
     ! !DESCRIPTION:
     ! Run elm model
@@ -460,6 +743,10 @@ contains
     call seq_infodata_GetData( infodata, orb_eccen=eccen, orb_mvelpp=mvelpp, &
          orb_lambm0=lambm0, orb_obliqr=obliqr )
 
+#if defined(CLDERA_PROFILING)
+    call cldera_switch_context("elm")
+#endif
+
     ! Loop over time steps in coupling interval
 
     dosend = .false.
@@ -564,6 +851,10 @@ contains
     use mct_mod
     use esmf
     use elm_finalizeMod, only : final
+#if defined(CLDERA_PROFILING)
+    use cldera_interface_mod, only: cldera_clean_up, cldera_switch_context
+    use perf_mod            , only: t_startf, t_stopf
+#endif
     !
     ! !ARGUMENTS:
     type(ESMF_Clock) , intent(inout) :: EClock    ! Input synchronization clock from driver
@@ -575,6 +866,12 @@ contains
     ! fill this in
     call final()
 
+#if defined(CLDERA_PROFILING)
+    call t_startf('cldera_clean_up')
+    call cldera_switch_context("elm")
+    call cldera_clean_up ()
+    call t_stopf('cldera_clean_up')
+#endif
   end subroutine lnd_final_mct
 
   !====================================================================================
