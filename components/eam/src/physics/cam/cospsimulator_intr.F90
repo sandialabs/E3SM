@@ -40,6 +40,10 @@ module cospsimulator_intr
        cloudsat_preclvl
     use mod_cosp_stats,       only: cosp_change_vertical_grid
 #endif
+#if defined(CLDERA_PROFILING)
+    use ppgrid,               only: begchunk
+    use cldera_interface_mod, only: cldera_set_field_part_data
+#endif
   implicit none
   private
   save
@@ -2518,6 +2522,10 @@ CONTAINS
        call outfld('MEANTAU_ISCCP',   meantau_isccp,   pcols,lchnk)
        call outfld('MEANTB_ISCCP',    meantb_isccp,    pcols,lchnk)
        call outfld('MEANTBCLR_ISCCP', meantbclr_isccp, pcols,lchnk)
+
+#if defined(CLDERA_PROFILING)
+       call cldera_set_field_part_data('CLDTOT_ISCCP',lchnk-begchunk+1,cldtot_isccp)
+#endif
     end if
     
     ! CALIPSO SIMULATOR OUTPUTS
