@@ -5,6 +5,7 @@
 #define INCLUDE_CEDR_UTIL_HPP
 
 #include <sstream>
+#include <iostream>
 
 #include "cedr_kokkos.hpp"
 #include "cedr_mpi.hpp"
